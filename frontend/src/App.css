@@ -1,0 +1,156 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.bookButton {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.bookButton img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+.greeting {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.intro {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.taskItem {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  position: relative;
+}
+
+.taskItem h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.startTrialButton {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.requiredBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.sidebar {
+  margin-top: 20px;
+}
+
+.esgInfoCard {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.playButton {
+  width: 40px;
+  height: 40px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.playButton::after {
+  content: '';
+  border-left: 15px solid white;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+
+.aboutBriink {
+  margin-bottom: 20px;
+}
+
+.resourceLinks {
+  list-style-type: none;
+  padding: 0;
+}
+
+.resourceLinks li {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row;
+  }
+
+  .main {
+    flex: 2;
+    margin-right: 20px;
+  }
+
+  .sidebar {
+    flex: 1;
+    margin-top: 0;
+  }
+}
+
