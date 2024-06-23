@@ -1,4 +1,5 @@
 import React from 'react';
+import GoogleLoginComponent from './googleAuth';
 
 const Signup = () => {
   return (
@@ -33,14 +34,13 @@ const Signup = () => {
           <span className="flex-shrink mx-4 text-gray-600">or</span>
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
-        <button className="bg-[#3b5998] hover:bg-[#2d4373] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mb-4">
-          Continue with Facebook
-        </button>
+        <GoogleLoginComponent/>
         <p className="text-center">
           <a className="text-[#0077b5] hover:underline" href="#">
             Already on LinkedIn? Sign in
           </a>
         </p>
+      
       </div>
     </div>
   );
