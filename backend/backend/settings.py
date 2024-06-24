@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,17 +43,30 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
+    'rest_framework.authtoken',
+    'rest_framework',
+    'corsheaders',
+    'data',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]
+
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -144,3 +158,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'OAUTH2_ACCESS_TOKEN_URL': 'https://accounts.google.com/o/oauth2/token',
     }
 }
+TOKEN_MODEL = None
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
