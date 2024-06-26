@@ -10,10 +10,10 @@ import DocumentsPage from './page/documents_page';
 // import RegistrationSuccess from './page/registrationSuccess';
 // import Leaderboard from './components/Leaderboard/Leaderboard.js';
 
-// const PrivateRoute = ({ element: Element }) => {
-//   const isAuthenticated = !!localStorage.getItem('token'); // Simplified authentication check
-//   return isAuthenticated ? <Element /> : <Navigate to="/login" />;
-// };
+const PrivateRoute = ({ element: Element }) => {
+  const isAuthenticated = !!localStorage.getItem('token'); // Simplified authentication check
+  return isAuthenticated ? <Element /> : <Navigate to="/login" />;
+};
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<Signup />} />  
         <Route path="/login" element={<Login />} />
-        <Route path="/documentpage" element={<DocumentsPage />} />
+        <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}
         {/* <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} /> */}
         {/* <Route path="/registrationSuccess" element={<PrivateRoute element={RegistrationSuccess} />} /> */}

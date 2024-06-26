@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const DocumentsPage = () => {
+const DocumentsPage = ({ user_id }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-
+  const userEmail=localStorage.getItem('userEmail');
   const handleFileUpload = async () => {
     if (!selectedFile) return;
-
+    console.log(userEmail);
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('name', selectedFile.name);
+    formData.append('user_id', userEmail);
 
     try {
       const response = await axios.post('http://localhost:8000/api/documents/', formData, {

@@ -20,10 +20,14 @@ const LoginPage = () => {
       console.log(formData);
       const response = await axios.post('http://localhost:8000/api/login/', formData);
       console.log(response.data);
+      const { token, userId } = response.data;
+      localStorage.setItem('token', token); 
+      localStorage.setItem('userEmail', formData.email);
       navigate('/documentpage'); // Handle success response
     } catch (error) {
       console.error('Error:', error); // Handle error
       if (error.response && error.response.status === 400) {
+        alert("Invalid Credentials");
         console.log("Invalid credentials");
       }
     }

@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import User
+from .models import User,Document
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 @csrf_exempt
 def signup(request):
@@ -57,7 +59,21 @@ def login(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+@csrf_exempt
+def document_upload(request):
+    if request.method == 'POST':
+        user_email = request.POST.get('userEmail')
+        print(user_email)
+        user = User.objects.get(email=user_email)
 
+        file = request.FILES['file']
+        name = file.name
+
+        document = Document.objects.create(user=user, file=file, name=name)
+
+        return JsonResponse({'message': 'Document uploaded successfully', 'document_id': document.id})
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 
