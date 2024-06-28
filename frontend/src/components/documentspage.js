@@ -66,7 +66,7 @@ const DocumentsPage = ({ user_id }) => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
         <div className="p-4">
-          <h1 className="text-2xl font-bold">briink</h1>
+          <h1 className="text-2xl font-bold">Project_M</h1>
         </div>
         <nav className="mt-6">
           <button className="w-full flex items-center p-4 text-gray-700 hover:bg-gray-200">
@@ -79,7 +79,7 @@ const DocumentsPage = ({ user_id }) => {
           <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Document chats</a>
           <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Policy assessments</a>
           <a href="#" className="block p-4 text-blue-600 font-semibold">Documents</a>
-          <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Help</a>
+          <a href="/support" className="block p-4 text-gray-700 hover:bg-gray-200">Help</a>
         </nav>
       </div>
 

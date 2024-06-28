@@ -57,9 +57,6 @@ def login(request):
 
 @csrf_exempt
 def document_upload(request):
-<<<<<<< HEAD
-    if request.method == 'POST':
-=======
     if request.method == 'GET':
         user_email = request.GET.get('userEmail')
         print(user_email)
@@ -75,7 +72,6 @@ def document_upload(request):
             return JsonResponse({'error': 'User not found'}, status=404)
         
     elif request.method == 'POST':
->>>>>>> bfd6e64bf6376087f7532a95542433dd198bab5b
         user_email = request.POST.get('user_id')
         print(user_email)
         user = User.objects.get(email=user_email)
