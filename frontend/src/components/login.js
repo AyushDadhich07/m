@@ -1,6 +1,37 @@
-import React from 'react';
+import React ,{ useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const navigate = useNavigate();
+  const handleChange = (e) => {
+    setFormData({ 
+      ...formData, 
+      [e.target.name]: e.target.value 
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(formData);
+      const response = await axios.post('http://localhost:8000/api/login/', formData);
+      console.log(response.data);
+      const { token, userId } = response.data;
+      localStorage.setItem('token', token); 
+      localStorage.setItem('userEmail', formData.email);
+      navigate('/documentpage'); // Handle success response
+    } catch (error) {
+      console.error('Error:', error); // Handle error
+      if (error.response && error.response.status === 400) {
+        alert("Invalid Credentials");
+        console.log("Invalid credentials");
+      }
+    }
+  };
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="flex flex-col md:flex-row w-full max-w-4xl mx-auto shadow-lg">
@@ -15,7 +46,7 @@ const LoginPage = () => {
         </div>
         <div className="bg-white p-8 md:w-1/2">
           <h2 className="text-2xl font-semibold mb-6">Log in</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                 Email
@@ -24,7 +55,9 @@ const LoginPage = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
+                name="email"
                 placeholder="user@email.com"
+                onChange={handleChange}
               />
             </div>
             <div className="mb-6">
@@ -35,7 +68,9 @@ const LoginPage = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
+                name="password"
                 placeholder="Enter your Password"
+                onChange={handleChange}
               />
               <a className="inline-block align-baseline font-bold text-sm text-black hover:text-gray-800" href="#">
                 Forgot password?
@@ -44,7 +79,8 @@ const LoginPage = () => {
             <div className="flex flex-col items-center justify-between">
               <button
                 className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mb-4"
-                type="button"
+                type="button" // Change type to "button"
+                onClick={handleSubmit}
               >
                 Login
               </button>
