@@ -1,13 +1,9 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from .models import User,Document
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.core.serializers.json import DjangoJSONEncoder
 
 @csrf_exempt
 def signup(request):
@@ -61,8 +57,22 @@ def login(request):
 
 @csrf_exempt
 def document_upload(request):
-    if request.method == 'POST':
-        user_email = request.POST.get('userEmail')
+    if request.method == 'GET':
+        user_email = request.GET.get('userEmail')
+        print(user_email)
+        try:
+            user = User.objects.get(email=user_email)
+            documents = Document.objects.filter(user=user)
+            # Construct JSON-serializable data
+            data = [{'id': doc.id, 'name': doc.name, 'file_url': doc.file.url, 'upload_date': doc.uploaded_at} for doc in documents]
+            # Serialize to JSON using DjangoJSONEncoder to handle FieldFile
+            json_data = json.dumps(data, cls=DjangoJSONEncoder)
+            return JsonResponse(json_data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        
+    elif request.method == 'POST':
+        user_email = request.POST.get('user_id')
         print(user_email)
         user = User.objects.get(email=user_email)
 

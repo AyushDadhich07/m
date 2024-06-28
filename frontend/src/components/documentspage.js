@@ -1,16 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const DocumentsPage = ({ user_id }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const userEmail = localStorage.getItem('userEmail');
+
+  useEffect(() => {
+    // Fetch documents data from API
+    const fetchDocuments = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/documents/?userEmail=${userEmail}`);
+        console.log('API response:', response);
+        console.log('Response data type:', typeof response.data);
+        console.log('Response data:', response.data);
+
+        let parsedData;
+        if (typeof response.data === 'string') {
+          parsedData = JSON.parse(response.data);
+        } else {
+          parsedData = response.data;
+        }
+
+        if (Array.isArray(parsedData)) {
+          setDocuments(parsedData);
+        } else {
+          console.error('Expected an array but got:', parsedData);
+        }
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+    };
+
+    fetchDocuments();
+  }, [userEmail]);
+
+  useEffect(() => {
+    console.log('Documents state updated:', documents);
+  }, [documents]);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  const userEmail=localStorage.getItem('userEmail');
+
   const handleFileUpload = async () => {
     if (!selectedFile) return;
-    console.log(userEmail);
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('user_id', userEmail);
@@ -21,7 +55,7 @@ const DocumentsPage = ({ user_id }) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response.data);
+      console.log('Upload response:', response.data);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -85,32 +119,33 @@ const DocumentsPage = ({ user_id }) => {
             <p className="text-center text-gray-500">...or drag'n drop documents here</p>
           </div>
 
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left pb-2">Name</th>
-                <th className="text-right pb-2">Status</th>
-                <th className="text-right pb-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {['henkel-social-standards-aug-2023.pdf', 'henkel-2022-sustainability-report.pdf'].map((doc, index) => (
-                <tr key={index} className="border-b">
-                  <td className="py-4 flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <svg className="w-6 h-6 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                    </svg>
-                    {doc}
-                  </td>
-                  <td className="py-4 text-right">
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Ready to use</span>
-                  </td>
-                  <td className="py-4 text-right">Today at 14:59</td>
+          {documents.length > 0 ? (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left pb-2">Name</th>
+                  <th className="text-right pb-2">Status</th>
+                  <th className="text-right pb-2">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {documents.map((doc, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="py-4 flex items-center">
+                      <input type="checkbox" className="mr-2" />
+                      <span className="ml-2">{doc.name}</span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Ready to use</span>
+                    </td>
+                    <td className="py-4 text-right">{doc.upload_date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No documents found</p>
+          )}
         </main>
       </div>
     </div>
