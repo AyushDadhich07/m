@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'data',
-    'celery',
-    # Add any other apps you've created for document processing
+    # Remove 'celery',
 ]
 
 MIDDLEWARE = [
@@ -151,13 +150,6 @@ TOKEN_MODEL = None
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
 
 # CORS settings
 CORS_ALLOWED_HEADERS = ['Content-Type', 'User-Email']
@@ -207,3 +199,12 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+import os
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ChromaDB settings
+CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')

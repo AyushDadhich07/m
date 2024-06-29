@@ -21,7 +21,7 @@ const AnswerQuestionsPage = () => {
       setAnswer(response.data.answer);
     } catch (error) {
       console.error('Error getting answer:', error);
-      setAnswer('An error occurred while processing your question.');
+      setAnswer(error.response?.data?.error || 'An error occurred while processing your question.');
     }
     setLoading(false);
   };

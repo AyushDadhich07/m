@@ -6,6 +6,7 @@ const DocumentsPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const userEmail = localStorage.getItem('userEmail');
   const navigate = useNavigate();
 
@@ -17,7 +18,6 @@ const DocumentsPage = () => {
     try {
       const response = await axios.get(`http://localhost:8000/api/documents/?userEmail=${userEmail}`);
       setDocuments(JSON.parse(response.data));
-      console.log(documents);
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
@@ -33,15 +33,19 @@ const DocumentsPage = () => {
     formData.append('file', selectedFile);
     formData.append('user_id', userEmail);
 
+    setUploading(true);
     try {
-      await axios.post('http://localhost:8000/api/documents/', formData, {
+      const response = await axios.post('http://localhost:8000/api/documents/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+      console.log(response.data);
       fetchDocuments();
     } catch (error) {
       console.error('Error uploading file:', error);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -59,6 +63,7 @@ const DocumentsPage = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
         <div className="p-4">
           <h1 className="text-2xl font-bold">Project_M</h1>
@@ -69,6 +74,7 @@ const DocumentsPage = () => {
         </nav>
       </div>
 
+      {/* Main content */}
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -87,9 +93,10 @@ const DocumentsPage = () => {
             />
             <button
               onClick={handleFileUpload}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              disabled={uploading}
+              className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Upload Document
+              {uploading ? 'Uploading...' : 'Upload Document'}
             </button>
           </div>
 

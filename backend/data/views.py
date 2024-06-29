@@ -7,7 +7,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
 from .serializers import QuestionSerializer, AnswerSerializer
 from rest_framework.permissions import IsAuthenticated
-from .ai_processing import process_uploaded_document, answer_question
+from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
+import logging
 
 @csrf_exempt
 def signup(request):
@@ -58,18 +59,14 @@ def login(request):
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-
 @csrf_exempt
 def document_upload(request):
     if request.method == 'GET':
         user_email = request.GET.get('userEmail')
-        print(user_email)
         try:
             user = User.objects.get(email=user_email)
             documents = Document.objects.filter(user=user)
-            # Construct JSON-serializable data
-            data = [{'id': doc.id, 'name': doc.name, 'file_url': doc.file.url, 'upload_date': doc.uploaded_at} for doc in documents]
-            # Serialize to JSON using DjangoJSONEncoder to handle FieldFile
+            data = [{'id': doc.id, 'name': doc.name, 'file_url': doc.file.url, 'upload_date': doc.uploaded_at, 'processed': doc.processed} for doc in documents]
             json_data = json.dumps(data, cls=DjangoJSONEncoder)
             return JsonResponse(json_data, safe=False)
         except User.DoesNotExist:
@@ -77,37 +74,55 @@ def document_upload(request):
         
     elif request.method == 'POST':
         user_email = request.POST.get('user_id')
-        print(user_email)
-        user = User.objects.get(email=user_email)
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        if 'file' not in request.FILES:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
 
         file = request.FILES['file']
         name = file.name
 
         document = Document.objects.create(user=user, file=file, name=name)
-        process_uploaded_document.delay(document.id)
-
-        return JsonResponse({'message': 'Document uploaded successfully', 'document_id': document.id})
+        
+        # Process the document synchronously
+        try:
+            success = process_uploaded_document(document.id)
+            if success:
+                return JsonResponse({'message': 'Document uploaded and processed successfully', 'document_id': document.id})
+            else:
+                return JsonResponse({'error': 'Error processing document'}, status=500)
+        except Exception as e:
+            logging.error(f"Error processing document: {str(e)}")
+            return JsonResponse({'error': f'Error processing document: {str(e)}'}, status=500)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
-
 
 @csrf_exempt
 def answer_question_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        question = data.get('question')
-        document_ids = data.get('documentIds')
-
-        # Check if all documents are processed
-        unprocessed_docs = Document.objects.filter(id__in=document_ids, processed=False)
-        if unprocessed_docs.exists():
-            return JsonResponse({'error': 'Some documents are still processing. Please wait and try again.'}, status=400)
-
         try:
-            answer = answer_question(question, document_ids)
-            return JsonResponse({'answer': answer})
+            data = json.loads(request.body)
+            question = data.get('question')
+            document_ids = data.get('documentIds')
+
+            if not question or not document_ids:
+                return JsonResponse({'error': 'Question and document IDs are required'}, status=400)
+
+            all_processed, message = check_documents_processed(document_ids)
+            if not all_processed:
+                return JsonResponse({'error': message}, status=400)
+
+            result = answer_question(question, document_ids)
+            return JsonResponse({
+                'answer': result['answer'],
+                'sources': result['sources']
+            })
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            logging.error(f"Error answering question: {str(e)}")
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
