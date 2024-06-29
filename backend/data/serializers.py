@@ -1,13 +1,17 @@
 from rest_framework import serializers
-from .models import Document
-from django.contrib.auth import get_user_model
+from .models import Question, Answer
 
-class DocumentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Document
-        fields = ['id', 'user', 'name', 'file', 'uploaded_at']
+class AnswerSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
 
-class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
-        fields = ['id', 'username', 'email']
+        model = Answer
+        fields = ['id', 'user', 'content', 'created_at']
+
+class QuestionSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    answers = AnswerSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = ['id', 'user', 'title', 'content', 'created_at', 'answers']

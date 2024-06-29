@@ -1,9 +1,13 @@
 from django.http import JsonResponse
-from .models import User,Document
+from .models import User,Document,Question, Answer
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
+from rest_framework import generics
+from .serializers import QuestionSerializer, AnswerSerializer
+from rest_framework.permissions import IsAuthenticated
+from .ai_processing import process_uploaded_document, answer_question
 
 @csrf_exempt
 def signup(request):
@@ -80,10 +84,51 @@ def document_upload(request):
         name = file.name
 
         document = Document.objects.create(user=user, file=file, name=name)
+        process_uploaded_document.delay(document.id)
 
         return JsonResponse({'message': 'Document uploaded successfully', 'document_id': document.id})
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def answer_question_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        question = data.get('question')
+        document_ids = data.get('documentIds')
+
+        # Check if all documents are processed
+        unprocessed_docs = Document.objects.filter(id__in=document_ids, processed=False)
+        if unprocessed_docs.exists():
+            return JsonResponse({'error': 'Some documents are still processing. Please wait and try again.'}, status=400)
+
+        try:
+            answer = answer_question(question, document_ids)
+            return JsonResponse({'answer': answer})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+class QuestionListCreate(generics.ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+@csrf_exempt
+class AnswerListCreate(generics.ListCreateAPIView):
+    serializer_class = AnswerSerializer
+
+    def get_queryset(self):
+        question_id = self.kwargs['question_id']
+        return Answer.objects.filter(question_id=question_id)
+
+    def perform_create(self, serializer):
+        question_id = self.kwargs['question_id']
+        question = Question.objects.get(id=question_id)
+        serializer.save(question=question)
+
 
 
 

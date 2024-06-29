@@ -5,6 +5,8 @@ import Landing from './page/landing';
 import Signup from './page/signup_page';
 import Login from './page/login_page';
 import DocumentsPage from './page/documents_page';
+import Discussion from './page/discussion'; 
+import AnswerQuestionsPage from './page/AnswerQuestionsPage';
 // import Dashboard from './page/dashboard';
 // import OtpVerify from './page/otpverify';
 // import RegistrationSuccess from './page/registrationSuccess';
@@ -23,6 +25,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />  
         <Route path="/login" element={<Login />} />
         <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
+        <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
+        <Route path="/answer-questions" element={<AnswerQuestionsPage />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}
         {/* <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} /> */}
         {/* <Route path="/registrationSuccess" element={<PrivateRoute element={RegistrationSuccess} />} /> */}

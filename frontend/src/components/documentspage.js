@@ -1,43 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const DocumentsPage = ({ user_id }) => {
+const DocumentsPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [documents, setDocuments] = useState([]);
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
   const userEmail = localStorage.getItem('userEmail');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch documents data from API
-    const fetchDocuments = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/api/documents/?userEmail=${userEmail}`);
-        console.log('API response:', response);
-        console.log('Response data type:', typeof response.data);
-        console.log('Response data:', response.data);
-
-        let parsedData;
-        if (typeof response.data === 'string') {
-          parsedData = JSON.parse(response.data);
-        } else {
-          parsedData = response.data;
-        }
-
-        if (Array.isArray(parsedData)) {
-          setDocuments(parsedData);
-        } else {
-          console.error('Expected an array but got:', parsedData);
-        }
-      } catch (error) {
-        console.error('Error fetching documents:', error);
-      }
-    };
-
     fetchDocuments();
   }, [userEmail]);
 
-  useEffect(() => {
-    console.log('Documents state updated:', documents);
-  }, [documents]);
+  const fetchDocuments = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/documents/?userEmail=${userEmail}`);
+      setDocuments(JSON.parse(response.data));
+      console.log(documents);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    }
+  };
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -50,102 +34,112 @@ const DocumentsPage = ({ user_id }) => {
     formData.append('user_id', userEmail);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/documents/', formData, {
+      await axios.post('http://localhost:8000/api/documents/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Upload response:', response.data);
+      fetchDocuments();
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   };
 
+  const handleDocumentSelection = (docId) => {
+    setSelectedDocuments(prev => 
+      prev.includes(docId) ? prev.filter(id => id !== docId) : [...prev, docId]
+    );
+  };
+
+  const handleAnswerQuestions = () => {
+    if (selectedDocuments.length > 0) {
+      navigate('/answer-questions', { state: { selectedDocuments } });
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
         <div className="p-4">
           <h1 className="text-2xl font-bold">briink</h1>
         </div>
         <nav className="mt-6">
-          <button className="w-full flex items-center p-4 text-gray-700 hover:bg-gray-200">
-            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Create new
-          </button>
-          <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Questionnaires</a>
-          <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Document chats</a>
-          <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Policy assessments</a>
-          <a href="#" className="block p-4 text-blue-600 font-semibold">Documents</a>
-          <a href="#" className="block p-4 text-gray-700 hover:bg-gray-200">Help</a>
+          <a href="/documentpage" className="block p-4 text-blue-600 font-semibold">Documents</a>
+          <a href="/support" className="block p-4 text-gray-700 hover:bg-gray-200">Help</a>
         </nav>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div className="flex items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Home</h2>
-              <span className="mx-2 text-gray-500">&gt;</span>
-              <h2 className="text-lg font-semibold text-gray-900">All documents</h2>
-            </div>
-            <button className="p-2 rounded-full hover:bg-gray-200">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </button>
+          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h2 className="text-lg font-semibold text-gray-900">All documents</h2>
           </div>
         </header>
 
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold mb-6">Documents</h1>
           
-          <div className="bg-white p-6 rounded-lg border-2 border-dashed border-gray-300 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <input type="file" onChange={handleFileChange} />
-              <button
-                className="bg-black text-white px-4 py-2 rounded-full flex items-center"
-                onClick={handleFileUpload}
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Upload documents
-              </button>
-            </div>
-            <p className="text-center text-gray-500">...or drag'n drop documents here</p>
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <input 
+              type="file" 
+              onChange={handleFileChange} 
+              className="mb-4"
+            />
+            <button
+              onClick={handleFileUpload}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            >
+              Upload Document
+            </button>
           </div>
 
           {documents.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left pb-2">Name</th>
-                  <th className="text-right pb-2">Status</th>
-                  <th className="text-right pb-2">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {documents.map((doc, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="py-4 flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <span className="ml-2">{doc.name}</span>
-                    </td>
-                    <td className="py-4 text-right">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Ready to use</span>
-                    </td>
-                    <td className="py-4 text-right">{doc.upload_date}</td>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {documents.map((doc) => (
+                    <tr key={doc.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedDocuments.includes(doc.id)}
+                          onChange={() => handleDocumentSelection(doc.id)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{doc.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${doc.processed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {doc.processed ? 'Ready to use' : 'Processing'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{new Date(doc.upload_date).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <p>No documents found</p>
+            <p className="text-gray-500">No documents found</p>
           )}
+
+          <div className="mt-6">
+            <button
+              onClick={handleAnswerQuestions}
+              disabled={selectedDocuments.length === 0}
+              className={`px-4 py-2 rounded-md ${selectedDocuments.length > 0 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            >
+              Answer Questions
+            </button>
+          </div>
         </main>
       </div>
     </div>
