@@ -3,6 +3,7 @@ import React from 'react';
 const article = () => {
   return (
         <div className="container mx-auto p-4">
+          <h1 className="text-9xl font-bold text-center my-80">Project M</h1>
           <nav className="flex space-x-4 overflow-x-auto">
             <a href="#" className="py-2 px-4 text-black hover:text-black dark:text-black dark:hover:text-white">For you</a>
             <a href="#" className="py-2 px-4 text-black hover:text-black dark:text-black dark:hover:text-white">Following</a>
