@@ -9,6 +9,9 @@ from .serializers import QuestionSerializer, AnswerSerializer
 from rest_framework.permissions import IsAuthenticated
 from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
 import logging
+from rest_framework.parsers import JSONParser
+from django.http import JsonResponse, HttpResponse
+
 
 @csrf_exempt
 def signup(request):
@@ -127,22 +130,48 @@ def answer_question_view(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
-class QuestionListCreate(generics.ListCreateAPIView):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+def question_list_create(request):
+    if request.method == 'GET':
+        questions = Question.objects.all()
+        serializer = QuestionSerializer(questions, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = QuestionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(user_email=data['user_email'])  # Pass user_email from request data
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 @csrf_exempt
-class AnswerListCreate(generics.ListCreateAPIView):
-    serializer_class = AnswerSerializer
-
-    def get_queryset(self):
-        question_id = self.kwargs['question_id']
-        return Answer.objects.filter(question_id=question_id)
-
-    def perform_create(self, serializer):
-        question_id = self.kwargs['question_id']
+def answer_list_create(request, question_id):
+    try:
         question = Question.objects.get(id=question_id)
-        serializer.save(question=question)
+    except Question.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        answers = Answer.objects.filter(question_id=question_id)
+        serializer = AnswerSerializer(answers, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_email = data.pop('user_email', None)
+        if not user_email:
+            return JsonResponse({'error': 'User email is required'}, status=400)
+        
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        serializer = AnswerSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(question=question, user=user)
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 
 
