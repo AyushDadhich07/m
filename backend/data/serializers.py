@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Question, Answer
+from .models import Question, Answer,User
 
 class AnswerSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
@@ -15,3 +15,9 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'user', 'title', 'content', 'created_at', 'answers']
+
+    def create(self, validated_data):
+        user_email = validated_data.pop('user_email')
+        user = User.objects.get(email=user_email)
+        question_instance = Question.objects.create(user=user, **validated_data)
+        return question_instance    
