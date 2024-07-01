@@ -130,21 +130,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTHENTICATION_BACKENDS = (
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
 )
 LOGIN_REDIRECT_URL = '/'
 
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'OAUTH2_CLIENT_ID': '1001957429102-54mr2l4ddgfg56o7mnaf9i4ufdvs9unt.apps.googleusercontent.com',
-        'OAUTH2_CLIENT_SECRET': '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',
-        'OAUTH2_AUTHORIZE_URL': 'https://accounts.google.com/o/oauth2/auth',
-        'OAUTH2_ACCESS_TOKEN_URL': 'https://accounts.google.com/o/oauth2/token',
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {'access_type': 'online'},
+#         'OAUTH2_CLIENT_ID': '1001957429102-54mr2l4ddgfg56o7mnaf9i4ufdvs9unt.apps.googleusercontent.com',
+#         'OAUTH2_CLIENT_SECRET': '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',
+#         'OAUTH2_AUTHORIZE_URL': 'https://accounts.google.com/o/oauth2/auth',
+#         'OAUTH2_ACCESS_TOKEN_URL': 'https://accounts.google.com/o/oauth2/token',
+#     }
+# }
 TOKEN_MODEL = None
 
 MEDIA_URL = '/media/'
@@ -200,11 +200,7 @@ LOGGING = {
     },
 }
 
-import os
-from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ChromaDB settings
 CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')

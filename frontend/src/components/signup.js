@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,6 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -23,21 +22,29 @@ const Signup = () => {
       console.log(formData);
       const response = await axios.post('http://localhost:8000/api/signup/', formData);
       console.log(response.data);
-      navigate('/login'); // Handle success response
+      navigate('/login');
     } catch (error) {
-      console.error('Error:', error); // Handle error
+      console.error('Error:', error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-[#0077b5] text-3xl font-bold text-center mb-4">LinkedIn</h1>
-        <h2 className="text-gray-700 text-xl text-center mb-6">Make the most of your professional life</h2>
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-          <div className="mb-4">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      <div className="bg-black text-white w-full md:w-1/2 p-8 flex flex-col justify-center items-center md:items-start">
+        <div className="mb-8">
+          <svg className="w-16 h-16 md:w-20 md:h-20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+          </svg>
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3 text-center md:text-left">Project M</h1>
+        <p className="text-lg text-gray-300 text-center md:text-left">India's first ESG report analysing company</p>
+      </div>
+      <div className="bg-white w-full md:w-1/2 p-8 flex flex-col justify-center overflow-y-auto">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-6">Sign up</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-md md:text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="First name"
               name="firstName"
@@ -45,9 +52,9 @@ const Signup = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="mb-4">
+          <div>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-md md:text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Last name"
               name="lastName"
@@ -55,9 +62,9 @@ const Signup = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="mb-4">
+          <div>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-md md:text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="email"
               placeholder="Email"
               name="email"
@@ -65,9 +72,9 @@ const Signup = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="mb-6">
+          <div>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-md md:text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="password"
               placeholder="Password (6 or more characters)"
               name="password"
@@ -75,28 +82,26 @@ const Signup = () => {
               onChange={handleChange}
             />
           </div>
-          <p className="text-gray-600 text-xs italic mb-4">
-            By clicking Join now, you agree to LinkedIn's User Agreement, Privacy Policy, and Cookie Policy.
+          <p className="text-gray-600 text-xs italic">
+            By clicking Sign up, you agree to our User Agreement, Privacy Policy, and Cookie Policy.
           </p>
-          <div className="flex items-center justify-between">
+          <div className="pt-2">
             <button
-              className="bg-[#0077b5] hover:bg-[#006097] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full text-md md:text-lg"
               type="submit"
             >
-              Join now
+              Sign up
             </button>
           </div>
         </form>
-        <div className="flex items-center my-4">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="flex-shrink mx-4 text-gray-600">or</span>
-          <div className="flex-grow border-t border-gray-300"></div>
+        <div className="mt-4 text-center">
+          <p className="text-sm">
+            Already have an account? 
+            <a href="/login" className="text-black hover:text-gray-800 font-bold ml-1">
+              Log in
+            </a>
+          </p>
         </div>
-        <p className="text-center">
-          <a className="text-[#0077b5] hover:underline" href="#">
-            Already on LinkedIn? Sign in
-          </a>
-        </p>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ function App() {
         <Route path="/support" element={<Support />} />
         <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
         <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
-        <Route path="/answer-questions" element={<AnswerQuestionsPage />} />
+        <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}
         {/* <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} /> */}
         {/* <Route path="/registrationSuccess" element={<PrivateRoute element={RegistrationSuccess} />} /> */}

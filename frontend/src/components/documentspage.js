@@ -65,13 +65,15 @@ const DocumentsPage = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
-        <div className="p-4">
-          <h1 className="text-2xl font-bold">Project_M</h1>
-        </div>
-        <nav className="mt-6">
-          <a href="/documentpage" className="block p-4 text-blue-600 font-semibold">Documents</a>
-          <a href="/support" className="block p-4 text-gray-700 hover:bg-gray-200">Help</a>
+        <aside className="w-full md:w-64 bg-white p-6 border-r">
+        <h1 className="text-2xl font-bold mb-6">Project M</h1>
+        <nav>
+          <ul className="space-y-2">
+            <li><a href="/documentpage" className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2">Documents</a></li>
+            <li><a href="/support" className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2">Help</a></li>
+          </ul>
         </nav>
+      </aside>
       </div>
 
       {/* Main content */}
