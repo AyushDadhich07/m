@@ -5,6 +5,7 @@ import Landing from './page/landing';
 import Signup from './page/signup_page';
 import Login from './page/login_page';
 import Support from './page/support';
+import Profile from './page/profile';
 import DocumentsPage from './page/documents_page';
 import Discussion from './page/discussion'; 
 import AnswerQuestionsPage from './page/AnswerQuestionsPage';
@@ -26,6 +27,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />  
         <Route path="/login" element={<Login />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
         <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
         <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} />
