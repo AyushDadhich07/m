@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib',
+    # 'django.contrib',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -130,7 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTHENTICATION_BACKENDS = (
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 LOGIN_REDIRECT_URL = '/'
 
@@ -208,3 +209,5 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ChromaDB settings
 CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
+
+SITE_ID = 1
