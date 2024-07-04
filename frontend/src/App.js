@@ -9,6 +9,7 @@ import Profile from './page/profile';
 import DocumentsPage from './page/documents_page';
 import Discussion from './page/discussion'; 
 import AnswerQuestionsPage from './page/AnswerQuestionsPage';
+import Company from './page/Company';
 // import Dashboard from './page/dashboard';
 // import OtpVerify from './page/otpverify';
 // import RegistrationSuccess from './page/registrationSuccess';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
         <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
         <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} />
+        <Route path="/company" element={<PrivateRoute element={Company} />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}
         {/* <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} /> */}
         {/* <Route path="/registrationSuccess" element={<PrivateRoute element={RegistrationSuccess} />} /> */}

@@ -45,3 +45,14 @@ class Answer(models.Model):
 
     def __str__(self):
         return f'Answer to {self.question.title}'
+    
+
+class Feedback(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    feedback = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name    
+

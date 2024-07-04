@@ -9,4 +9,6 @@ urlpatterns = [
      path('questions/', views.question_list_create, name='question-list-create'),
     path('questions/<int:question_id>/answers/', views.answer_list_create, name='answer-list-create'),
     path('answer-question/', views.answer_question_view, name='answer_question'),
+    path('user/', views.profile_api, name='profile_api'),
+    path('submit-feedback/', views.submit_feedback, name='submit-feedback'),
 ]

@@ -1,16 +1,19 @@
 from django.http import JsonResponse
-from .models import User,Document,Question, Answer
+from .models import User,Document,Question, Answer, Feedback
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
-from .serializers import QuestionSerializer, AnswerSerializer
+from .serializers import QuestionSerializer, AnswerSerializer,FeedbackSerializer
 from rest_framework.permissions import IsAuthenticated
 from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
 import logging
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse, HttpResponse
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
 
 
 @csrf_exempt
@@ -174,8 +177,32 @@ def answer_list_create(request, question_id):
         return JsonResponse(serializer.errors, status=400)
 
 
+@csrf_exempt
+def profile_api(request):
+    if request.method == 'GET':
+        user_email = request.GET.get('user_email', '')
+        try:
+            profile = User.objects.get(email=user_email)  # Adjust this query based on your model structure
+            data = {
+                'first_name': profile.first_name,
+                'last_name': profile.last_name,
+                'email': profile.email,
+                # Add other fields you want to expose to the frontend
+            }
+            return JsonResponse(data)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Profile not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-
-
-
-
+@csrf_exempt
+def submit_feedback(request):
+    if request.method == 'POST':
+         data = json.loads(request.body.decode('utf-8'))
+         name=data.get('name')
+         email=data.get('email')
+         feedback=data.get('feedback')
+         entry=Feedback.objects.create(name=name,email=email,feedback=feedback)
+         response = JsonResponse({'message': 'Feedback submitted successfully'})
+         return response
+    return JsonResponse({'error': 'Method not allowed'}, status=405)

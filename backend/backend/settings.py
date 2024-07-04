@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib',
+    # 'django.contrib',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'data',
+    'company',
     # Remove 'celery',
 ]
 
@@ -130,7 +131,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 LOGIN_REDIRECT_URL = '/'
 
@@ -148,7 +150,7 @@ LOGIN_REDIRECT_URL = '/'
 TOKEN_MODEL = None
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # CORS settings
@@ -204,3 +206,5 @@ LOGGING = {
 
 # ChromaDB settings
 CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
+
+SITE_ID = 1
