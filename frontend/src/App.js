@@ -8,6 +8,7 @@ import Support from './page/support';
 import Profile from './page/profile';
 import DocumentsPage from './page/documents_page';
 import Discussion from './page/discussion'; 
+import Home from './page/home'; 
 import AnswerQuestionsPage from './page/AnswerQuestionsPage';
 import Company from './page/Company';
 // import Dashboard from './page/dashboard';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/home" element={<Home/>} />
         <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
         <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
         <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} />
