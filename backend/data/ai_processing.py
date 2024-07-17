@@ -14,6 +14,8 @@ from langchain.schema import Document as LangchainDocument
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
 from langchain import LLMChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
 
 dotenv.load_dotenv()
 
