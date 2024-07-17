@@ -1,16 +1,17 @@
 import React from 'react';
 import { ArrowRight, Check, Star, Book, Calendar } from 'lucide-react';
+import { Link } from 'react-scroll';
 
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-md">
+      {/* <header className="bg-white shadow-md">
         <nav className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="text-2xl font-bold text-blue-600">ESGPro</div>
             <div className="space-x-4">
-              <a href="#" className="text-gray-600 hover:text-blue-600">Features</a>
-              <a href="#" className="text-gray-600 hover:text-blue-600">Resources</a>
+              <Link to="features" smooth={true} duration={500} className="text-gray-600 hover:text-blue-600 cursor-pointer">Features</Link>
+              <Link to="resources" smooth={true} duration={500} className="text-gray-600 hover:text-blue-600 cursor-pointer">Resources</Link>
               <a href="#" className="text-gray-600 hover:text-blue-600">About</a>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700">
                 Get Started
@@ -18,7 +19,7 @@ const HomePage = () => {
             </div>
           </div>
         </nav>
-      </header>
+      </header> */}
 
       <main>
         {/* Hero Section */}
@@ -27,9 +28,6 @@ const HomePage = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Simplify ESG Reporting, Maximize Impact</h1>
             <p className="text-xl mb-8">Our AI-powered platform helps companies manage ESG data and streamline reporting for comprehensive assessments and comparisons.</p>
             <div className="space-x-4">
-              <button className="bg-white text-blue-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100">
-                Get Started Today
-              </button>
               <button className="border border-white text-white px-6 py-3 rounded-full font-bold hover:bg-blue-700">
                 Learn More
               </button>
@@ -38,20 +36,23 @@ const HomePage = () => {
         </section>
 
         {/* Key Features */}
-        <section className="py-20">
+        <section className="py-20" id="features">
           <div className="container mx-auto px-6">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold mb-4">Comprehensive Company Details & Comparisons</h2>
                 <p className="text-gray-600 mb-4">Access detailed ESG profiles and compare companies seamlessly.</p>
-                <a href="#" className="text-blue-600 font-bold flex items-center hover:underline">
+                <a href="/company" className="text-blue-600 font-bold flex items-center hover:underline">
                   Explore Now <ArrowRight size={20} className="ml-2" />
+                </a>
+                <a href="/brochure.pdf" download className="text-blue-600 font-bold flex items-center hover:underline">
+                  Download Brochure <ArrowRight size={20} className="ml-2 mt-2" />
                 </a>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold mb-4">AI-Driven ESG KPI Assessment</h2>
                 <p className="text-gray-600 mb-4">Utilize AI to evaluate ESG KPIs for accurate and actionable insights.</p>
-                <a href="#" className="text-blue-600 font-bold flex items-center hover:underline">
+                <a href="/documentpage" className="text-blue-600 font-bold flex items-center hover:underline">
                   Discover More <ArrowRight size={20} className="ml-2" />
                 </a>
               </div>
@@ -59,31 +60,31 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Why Choose Us */}
+        {/* Most Advanced Solution */}
         <section className="bg-gray-200 py-20">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center mb-12">Why Choose Us</h2>
+            <h2 className="text-3xl font-bold text-center mb-12">The Most Advanced Solution on the Market</h2>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-4">
                   <Check size={24} className="text-green-500 mr-2" />
-                  <h3 className="text-xl font-bold">Expertise</h3>
+                  <h3 className="text-xl font-bold">AI for Enhanced Reporting Efficiency</h3>
                 </div>
-                <p className="text-gray-600">Trusted advisors for ESG compliance.</p>
+                <p className="text-gray-600">Our AI capabilities streamline and enhance the efficiency of your reporting processes.</p>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-4">
                   <Check size={24} className="text-green-500 mr-2" />
-                  <h3 className="text-xl font-bold">Simplicity</h3>
+                  <h3 className="text-xl font-bold">80% Cost Savings</h3>
                 </div>
-                <p className="text-gray-600">Simplify data collection and reporting processes.</p>
+                <p className="text-gray-600">Achieve significant cost savings compared to in-house reporting.</p>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-4">
                   <Check size={24} className="text-green-500 mr-2" />
-                  <h3 className="text-xl font-bold">Efficiency</h3>
+                  <h3 className="text-xl font-bold">3x Easier and Faster Processing</h3>
                 </div>
-                <p className="text-gray-600">Harness AI for enhanced reporting efficiency.</p>
+                <p className="text-gray-600">Experience three times the ease and speed in processing your ESG data.</p>
               </div>
             </div>
           </div>
@@ -107,7 +108,7 @@ const HomePage = () => {
         </section>
 
         {/* Educational Resources */}
-        <section className="py-20">
+        <section className="py-20" id="resources">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-12">Educational Resources</h2>
             <div className="grid md:grid-cols-3 gap-8 mb-8">
