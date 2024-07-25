@@ -33,10 +33,14 @@ function App() {
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/home" element={<Home/>} />
-        <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} />
-        <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/>
-        <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} />
-        <Route path="/company" element={<PrivateRoute element={Company} />} />
+        {/* <Route path="/documentpage" element={<PrivateRoute element={DocumentsPage} />} /> */}
+        <Route path="/documentpage" element={<DocumentsPage/>} />
+        {/* <Route path="/discussion" element={<PrivateRoute element={Discussion}/>}/> */}
+        <Route path="/discussion" element={<Discussion/>} />
+        {/* <Route path="/answer-questions" element={<PrivateRoute element={AnswerQuestionsPage} />} /> */}
+        <Route path="/answer-questions" element={<AnswerQuestionsPage/>} />
+        {/* <Route path="/company" element={<PrivateRoute element={Company} />} /> */}
+        <Route path="/company" element={<Company/>} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/glossary" element={<Glossary />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}

@@ -106,6 +106,9 @@ def document_upload(request):
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+
+
+
 @csrf_exempt
 def answer_question_view(request):
     if request.method == 'POST':
