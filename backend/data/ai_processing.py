@@ -25,6 +25,8 @@ def process_document(file_path):
     loader = PyPDFLoader(file_path)
     pages = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    print("split hogya!!")
+    print()
     return text_splitter.split_documents(pages)
 
 def process_uploaded_document(document_id):
@@ -108,7 +110,7 @@ def answer_question(question, document_ids):
     }
 
 def setup_qa_chain(vector_store):
-    llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
+    # llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
 
     prompt_template = """You are an AI assistant specialized in analyzing ESG (Environmental, Social, and Governance) reports. Your task is to answer questions about these reports accurately and comprehensively. When interpreting questions:
 
@@ -123,7 +125,7 @@ def setup_qa_chain(vector_store):
     Answer:"""
     PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0, openai_api_key=openai_api_key)
+    llm = ChatOpenAI(model_name="gpt-4o", temperature=0, openai_api_key=openai_api_key)
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",

@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'data',
     'company',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     # Remove 'celery',
 ]
 
@@ -52,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
    
 ]
 
@@ -132,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    # 'allauth.account.auth_backends.AuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 LOGIN_REDIRECT_URL = '/'
 
@@ -208,3 +213,14 @@ LOGGING = {
 CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
 
 SITE_ID = 1
+
+# Google OAuth2 credentials
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com',
+            'secret': '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',
+            'scope': ['profile', 'email'],
+        }
+    }
+}

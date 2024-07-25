@@ -20,9 +20,9 @@ const Widget = () => {
         <div className="flex items-center space-x-4">
           {/* <img src="\" alt="Logo" className="h-10"> */}
           <div className="hidden md:flex space-x-8">
-            <a href="/" className="text-white hover:text-zinc-400">About</a>
+            <a href="/home" className="text-white hover:text-zinc-400">About</a>
             <a href="/documentpage" className="text-white hover:text-zinc-400">Documents</a>
-            <a href="#" className="text-white hover:text-zinc-400">Resources</a>
+            <a href="/glossary" className="text-white hover:text-zinc-400">Resources</a>
             <a href="/company/" className="text-white hover:text-zinc-400">Companies</a>
             <a href="/discussion" className="text-white hover:text-zinc-400">Community</a>
             <a href="#" className="text-white hover:text-zinc-400">Pricing</a>

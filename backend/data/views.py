@@ -1,11 +1,11 @@
 from django.http import JsonResponse
-from .models import User,Document,Question, Answer, Feedback
+from .models import User, Document, Question, Answer, Feedback
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
-from .serializers import QuestionSerializer, AnswerSerializer,FeedbackSerializer
+from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer
 from rest_framework.permissions import IsAuthenticated
 from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
 import logging
@@ -104,6 +104,17 @@ def document_upload(request):
             logging.error(f"Error processing document: {str(e)}")
             return JsonResponse({'error': f'Error processing document: {str(e)}'}, status=500)
 
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def delete_document(request, document_id):
+    if request.method == 'DELETE':
+        try:
+            document = Document.objects.get(id=document_id)
+            document.delete()
+            return JsonResponse({'message': 'Document deleted successfully'}, status=200)
+        except Document.DoesNotExist:
+            return JsonResponse({'error': 'Document not found'}, status=404)
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
