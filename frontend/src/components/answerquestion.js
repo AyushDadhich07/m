@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate,Link } from 'react-router-dom';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 const AnswerQuestionsPage = () => {
   const location = useLocation();
@@ -27,8 +28,37 @@ const AnswerQuestionsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="flex min-h-screen bg-gray-100">
+     <div className="w-64 bg-white shadow-md">
+        <div className="p-4">
+          <h1 className="text-2xl font-bold">Project_M</h1>
+        </div>
+        <aside className="w-full md:w-64 bg-white p-6 border-r">
+          <nav>
+            <ul className="space-y-2">
+              <li>
+                <Link 
+                  to="/documentpage" 
+                  className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2"
+                >
+                  Documents
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/support" 
+                  className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2"
+                >
+                  Help
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </aside>
+      </div>
+
+
+      <div className="w-8xl mx-auto bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold mb-4">Answer Questions</h1>
         <form onSubmit={handleQuestionSubmit} className="mb-6">
           <textarea
@@ -48,12 +78,12 @@ const AnswerQuestionsPage = () => {
         </form>
         {answer && (
           <div className="bg-gray-50 p-4 rounded-md">
-            <h2 className="font-semibold mb-2">Answer:</h2>
-            <p>{answer}</p>
+            <h2 className="font-bold mb-2">Answer:</h2>
+            <ReactMarkdown>{answer}</ReactMarkdown>
           </div>
         )}
         <button
-          onClick={() => navigate('/documents')}
+          onClick={() => navigate('/documentpage')}
           className="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
         >
           Back to Documents

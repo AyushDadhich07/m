@@ -13,6 +13,7 @@ import AnswerQuestionsPage from './page/AnswerQuestionsPage';
 import Company from './page/Company';
 import PrivacyPolicy from './page/privacyPolicy';
 import Glossary from './page/glossary';
+import Pricing from './page/Pricing';
 // import Dashboard from './page/dashboard';
 // import OtpVerify from './page/otpverify';
 // import RegistrationSuccess from './page/registrationSuccess';
@@ -43,6 +44,7 @@ function App() {
         <Route path="/company" element={<Company/>} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/glossary" element={<Glossary />} />
+        <Route path="/pricing" element={<Pricing />} />
         {/* <Route path="/otpVerify" element={<OtpVerify />} /> */}
         {/* <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} /> */}
         {/* <Route path="/registrationSuccess" element={<PrivateRoute element={RegistrationSuccess} />} /> */}

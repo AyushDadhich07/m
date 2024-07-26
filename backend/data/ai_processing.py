@@ -14,6 +14,8 @@ from langchain.schema import Document as LangchainDocument
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
 from langchain import LLMChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
 
 dotenv.load_dotenv()
 
@@ -23,6 +25,8 @@ def process_document(file_path):
     loader = PyPDFLoader(file_path)
     pages = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    print("split hogya!!")
+    print()
     return text_splitter.split_documents(pages)
 
 def process_uploaded_document(document_id):
@@ -106,14 +110,15 @@ def answer_question(question, document_ids):
     }
 
 def setup_qa_chain(vector_store):
-    llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
+    # llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
 
     prompt_template = """You are an AI assistant specialized in analyzing ESG (Environmental, Social, and Governance) reports. Your task is to answer questions about these reports accurately and comprehensively. When interpreting questions:
 
     1. Recognize that "Scope 1&2" and "Scope 1 + Scope 2" refer to the same thing.
     2. Be aware of common abbreviations in ESG reporting, such as SBT for Science-Based Targets.
     3. If a question uses unfamiliar terminology, try to interpret it based on context and your knowledge of ESG reporting.
-    4. First provide a brief summary of the context given to you, and then the answer.
+    4. The answer should be in a structured format, easy to read and infromative.
+    5. Ensure proper spacing between points or lines or paragraphs, however the answer is best.
     Use the provided context to answer the question as best as you can. If the exact information isn't available, provide the most relevant information you can find.
 
     Context: {context}
@@ -121,7 +126,7 @@ def setup_qa_chain(vector_store):
     Answer:"""
     PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0, openai_api_key=openai_api_key)
+    llm = ChatOpenAI(model_name="gpt-4o", temperature=0, openai_api_key=openai_api_key)
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",

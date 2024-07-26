@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const DocumentsPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -45,6 +45,7 @@ const DocumentsPage = () => {
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
+      fetchDocuments();
       setUploading(false);
     }
   };
@@ -61,19 +62,51 @@ const DocumentsPage = () => {
     }
   };
 
+  const handleDeleteDocument = async (docId) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/documents/${docId}/`);
+      fetchDocuments(); // Refresh the document list
+    } catch (error) {
+      console.error('Error deleting document:', error);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
+        <div className="p-4">
+          <h1 className="text-2xl font-bold">Project_M</h1>
+        </div>
         <aside className="w-full md:w-64 bg-white p-6 border-r">
-        <h1 className="text-2xl font-bold mb-6">Project M</h1>
-        <nav>
-          <ul className="space-y-2">
-            <li><a href="/documentpage" className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2">Documents</a></li>
-            <li><a href="/support" className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2">Help</a></li>
-          </ul>
-        </nav>
-      </aside>
+          <nav>
+            <ul className="space-y-2">
+              <li>
+                <Link 
+                  to="/documentpage" 
+                  className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2"
+                >
+                  Documents
+                </Link>
+              </li>
+              <button
+              onClick={handleAnswerQuestions}
+              disabled={selectedDocuments.length === 0}
+              className={`px-4 py-2 rounded-md ${selectedDocuments.length > 0 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            >
+              Answer Questions
+            </button>
+              <li>
+                <Link 
+                  to="/support" 
+                  className="flex items-center space-x-2 text-gray-700 hover:bg-gray-100 rounded p-2"
+                >
+                  Help
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </aside>
       </div>
 
       {/* Main content */}
@@ -111,6 +144,7 @@ const DocumentsPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -131,6 +165,14 @@ const DocumentsPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">{new Date(doc.upload_date).toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => handleDeleteDocument(doc.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -140,7 +182,7 @@ const DocumentsPage = () => {
             <p className="text-gray-500">No documents found</p>
           )}
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <button
               onClick={handleAnswerQuestions}
               disabled={selectedDocuments.length === 0}
@@ -148,7 +190,7 @@ const DocumentsPage = () => {
             >
               Answer Questions
             </button>
-          </div>
+          </div> */}
         </main>
       </div>
     </div>

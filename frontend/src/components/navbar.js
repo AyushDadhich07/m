@@ -25,7 +25,7 @@ const Widget = () => {
             <a href="/glossary" className="text-white hover:text-zinc-400">Resources</a>
             <a href="/company/" className="text-white hover:text-zinc-400">Companies</a>
             <a href="/discussion" className="text-white hover:text-zinc-400">Community</a>
-            <a href="#" className="text-white hover:text-zinc-400">Pricing</a>
+            <a href="/pricing" className="text-white hover:text-zinc-400">Pricing</a>
           </div>
         </div>
         <div className="flex items-center space-x-4">

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 
 
@@ -11,4 +11,6 @@ urlpatterns = [
     path('answer-question/', views.answer_question_view, name='answer_question'),
     path('user/', views.profile_api, name='profile_api'),
     path('submit-feedback/', views.submit_feedback, name='submit-feedback'),
+    path('accounts/', include('allauth.urls')),
+    path('documents/<int:document_id>/', views.delete_document, name='delete_document'),
 ]

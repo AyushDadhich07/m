@@ -158,11 +158,9 @@ const HomePage = () => {
             <div>
               <h3 className="text-lg font-bold mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:underline">About</a></li>
-                <li><a href="#" className="hover:underline">Partners</a></li>
-                <li><a href="#" className="hover:underline">Careers</a></li>
-                <li><a href="#" className="hover:underline">FAQ</a></li>
-                <li><a href="#" className="hover:underline">Privacy Policy</a></li>
+                <li><a href="/home" className="hover:underline">About</a></li>
+                <li><a href="/support" className="hover:underline">FAQ</a></li>
+                <li><a href="/privacy" className="hover:underline">Privacy Policy</a></li>
               </ul>
             </div>
             <div>
