@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleAuth from './GoogleAuth';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +17,7 @@ const LoginPage = () => {
       [e.target.name]: e.target.value 
     });
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,6 +96,11 @@ const LoginPage = () => {
             </p>
           </div>
         </form>
+        <GoogleOAuthProvider clientId="407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com">
+      <div className="App">
+        <GoogleAuth />
+      </div>
+    </GoogleOAuthProvider>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ class User(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)  # You might want to use a more secure way to store passwords
-
+    pass
     def __str__(self):
         return self.email
 
@@ -56,3 +56,18 @@ class Feedback(models.Model):
     def __str__(self):
         return self.name    
 
+class Article(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    image_url = models.URLField(max_length=200)
+    date = models.DateField()
+
+    def __str__(self):
+        return self.title
+    
+
+class defined_Question(models.Model):
+    question=models.TextField()
+
+    def __str__(self):
+        return self.question[:50]   

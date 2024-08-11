@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import GoogleAuth from './GoogleAuth';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -10,18 +11,10 @@ const Signup = () => {
     email: '',
     password: ''
   });
-  const handleGoogleLogin = async (credentialResponse) => {
-    const { credential } = credentialResponse;
-    try {
-        const response = await axios.post('http://localhost:8000/api/auth/google/', { id_token: credential });
-        console.log(response.data);
-        // Handle successful login (e.g., navigate to another page)
-    } catch (error) {
-        console.error('Error:', error);
-    }
-  };
-
+  
   const navigate = useNavigate();
+
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -105,6 +98,11 @@ const Signup = () => {
             </button>
           </div>
         </form>
+        <GoogleOAuthProvider clientId="407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com">
+      <div className="App">
+        <GoogleAuth />
+      </div>
+    </GoogleOAuthProvider>
         <div className="mt-4 text-center">
           <p className="text-sm">
             Already have an account? 
@@ -114,12 +112,6 @@ const Signup = () => {
           </p>
         </div>
       </div>
-      <GoogleOAuthProvider clientId="YOUR_CLIENT_ID">
-            <GoogleLogin
-                onSuccess={handleGoogleLogin}
-                onError={(error) => console.log('Login Failed:', error)}
-            />
-        </GoogleOAuthProvider>
     </div>
   );
 };

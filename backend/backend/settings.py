@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'dj_rest_auth.registration',
     # Remove 'celery',
 ]
 
@@ -152,6 +153,41 @@ LOGIN_REDIRECT_URL = '/'
 #         'OAUTH2_ACCESS_TOKEN_URL': 'https://accounts.google.com/o/oauth2/token',
 #     }
 # }
+
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'APP': {
+            'client_id': '407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com',
+            'secret': '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',
+            'key': 'AIzaSyBvHQE1E8N8KG9RJg8Z4gZG5RLUMM63MN4',
+        }
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+
+
 TOKEN_MODEL = None
 
 MEDIA_URL = '/media/'
@@ -215,12 +251,3 @@ CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
 SITE_ID = 1
 
 # Google OAuth2 credentials
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com',
-            'secret': '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',
-            'scope': ['profile', 'email'],
-        }
-    }
-}

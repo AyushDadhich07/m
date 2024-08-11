@@ -1,19 +1,28 @@
 from django.http import JsonResponse
-from .models import User, Document, Question, Answer, Feedback
+from .models import User, Document, Question, Answer, Feedback,Article,defined_Question
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
-from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer
+from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer,PredefinedQuestionSerializer
 from rest_framework.permissions import IsAuthenticated
 from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
 import logging
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse, HttpResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+from django.shortcuts import get_object_or_404
+
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 
 @csrf_exempt
@@ -220,3 +229,35 @@ def submit_feedback(request):
          response = JsonResponse({'message': 'Feedback submitted successfully'})
          return response
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def articles_view(request, article_id=None):
+    if request.method == 'GET':
+        if article_id:
+            # Fetch a single article
+            article = get_object_or_404(Article, id=article_id)
+            article_data = {
+                'id': article.id,
+                'title': article.title,
+                'description': article.description,
+                'image_url': article.image_url,
+                'date': article.date,
+                # Add any additional fields you want to include
+            }
+            return JsonResponse(article_data)
+        else:
+            # Fetch all articles
+            articles = Article.objects.all().values('id', 'title', 'description', 'image_url', 'date')
+            articles_list = list(articles)
+            return JsonResponse(articles_list, safe=False)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def question_list(request):
+    if request.method == 'GET':
+        questions = defined_Question.objects.all()
+        serializer = PredefinedQuestionSerializer(questions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

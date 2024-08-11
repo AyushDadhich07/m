@@ -2,6 +2,13 @@ from rest_framework import serializers
 from .models import Question, Answer,User
 from .models import Feedback
 
+from .models import defined_Question
+
+class PredefinedQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = defined_Question
+        fields = ['id', 'question']
+
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback

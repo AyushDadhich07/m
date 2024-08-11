@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Document, ProcessedDocument, Question, Answer,Feedback
+from .models import User, Document, ProcessedDocument, Question, Answer, Feedback, Article, defined_Question
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name')
@@ -38,16 +38,24 @@ class FeedbackAdmin(admin.ModelAdmin):
     search_fields = ('name', 'email', 'feedback')
     list_filter = ('submitted_at',)
 
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description', 'image_url', 'date')
+    search_fields = ('title', 'description')
+    list_filter = ('date',)
+    date_hierarchy = 'date'
 
 
+class DefinedQuestionAdmin(admin.ModelAdmin):
+    list_display = ('question',)
+    search_fields = ('question',)
+    list_filter = ('question',)
 
 
-
-
-admin.site.register(Feedback, FeedbackAdmin)    
 admin.site.register(User, UserAdmin)
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(ProcessedDocument, ProcessedDocumentAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
-
+admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(Article, ArticleAdmin)
+admin.site.register(defined_Question,DefinedQuestionAdmin)
