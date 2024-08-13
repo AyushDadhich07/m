@@ -24,7 +24,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       console.log(formData);
-      const response = await axios.post('http://localhost:8000/api/signup/', formData);
+      const response = await axios.post('https://m-zbr0.onrender.com/api/signup/', formData);
       console.log(response.data);
       navigate('/login');
     } catch (error) {

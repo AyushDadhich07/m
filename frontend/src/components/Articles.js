@@ -6,7 +6,7 @@ const Articles = () => {
     const [articles, setArticles] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/articles/')
+        axios.get('https://m-zbr0.onrender.com/api/articles/')
             .then(response => setArticles(response.data))
             .catch(error => console.error('Error fetching articles:', error));
     }, []);

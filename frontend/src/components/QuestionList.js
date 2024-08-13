@@ -53,7 +53,7 @@ const QuestionList = () => {
 
   const handleAnswerSubmit = async (questionId) => {
     try {
-      await axios.post(`http://localhost:8000/api/questions/${questionId}/answers/`, {
+      await axios.post(`https://m-zbr0.onrender.com/api/questions/${questionId}/answers/`, {
         content: newAnswer,
         user_email: localStorage.getItem('userEmail'),
       });

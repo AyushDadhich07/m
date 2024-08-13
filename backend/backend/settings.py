@@ -199,6 +199,7 @@ CORS_ALLOWED_HEADERS = ['Content-Type', 'User-Email']
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
+    'https://66bbdad89028aeb9a1537260--voluble-hummingbird-f7c333.netlify.app'
 ]
 
 # File upload settings
