@@ -1,0 +1,18 @@
+Django
+djangorestframework
+django-cors-headers
+dj-rest-auth
+django-allauth
+python-dotenv
+PyPDF2
+langchain
+langchain_community
+openai
+sentence-transformers
+chromadb
+HuggingFace_hub
+Pillow
+
+# For Google OAuth2 integration
+oauthlib
+requests-oauthlib
