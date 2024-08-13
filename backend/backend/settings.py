@@ -252,4 +252,7 @@ CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
 
 SITE_ID = 1
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://m-zbr0.onrender.com',
+]
 # Google OAuth2 credentials
