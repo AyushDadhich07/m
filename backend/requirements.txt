@@ -12,7 +12,8 @@ sentence-transformers
 chromadb
 HuggingFace_hub
 Pillow
-
+langchain_openai
+jwt
 # For Google OAuth2 integration
 oauthlib
 requests-oauthlib

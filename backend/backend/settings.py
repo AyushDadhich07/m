@@ -20,7 +20,9 @@ SECRET_KEY = 'django-insecure-k!6lhx)jf5xr2t7n6^z)^6#v-za_ixm_-@4ggz4-b^1jxd^iw@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'm-zbr0.onrender.com'
+]
 
 
 # Application definition
@@ -251,4 +253,7 @@ CHROMA_DB_DIR = os.path.join(BASE_DIR, 'chroma_db')
 
 SITE_ID = 1
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://m-zbr0.onrender.com',
+]
 # Google OAuth2 credentials
