@@ -96,11 +96,11 @@ const LoginPage = () => {
             </p>
           </div>
         </form>
-        <GoogleOAuthProvider clientId="407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com">
-      <div className="App">
-        <GoogleAuth />
-      </div>
-    </GoogleOAuthProvider>
+        {/* <GoogleOAuthProvider clientId="407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com"> */}
+      {/* <div className="App"> */}
+        {/* <GoogleAuth /> */}
+      {/* </div> */}
+    {/* </GoogleOAuthProvider> */}
       </div>
     </div>
   );
