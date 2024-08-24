@@ -10,6 +10,7 @@ const LoginPage = () => {
     password: ''
   });
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ 
@@ -21,6 +22,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       console.log(formData);
       const response = await axios.post('https://m-zbr0.onrender.com/api/login/', formData);
@@ -28,8 +30,10 @@ const LoginPage = () => {
       const { token, userId } = response.data;
       localStorage.setItem('token', token); 
       localStorage.setItem('userEmail', formData.email);
+      setLoading(false);
       navigate('/documentpage');
     } catch (error) {
+      setLoading(false);
       console.error('Error:', error);
       if (error.response && error.response.status === 400) {
         alert("Invalid Credentials");
@@ -40,6 +44,12 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      {loading && (
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+        <div class="w-16 h-16 border-8 border-white/30 border-t-white rounded-full animate-spin"></div>
+      </div>
+      
+      )}
       <div className="bg-black text-white w-full md:w-1/2 p-8 flex flex-col justify-center items-center md:items-start">
         <div className="mb-8">
           <svg className="w-16 h-16 md:w-20 md:h-20" viewBox="0 0 24 24" fill="currentColor">

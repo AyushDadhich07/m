@@ -51,8 +51,8 @@ const DocumentsPage = () => {
   };
 
   const handleDocumentSelection = (docId) => {
-    setSelectedDocuments(prev => 
-      prev.includes(docId) ? prev.filter(id => id !== docId) : [...prev, docId]
+    setSelectedDocuments((prev) =>
+      prev.includes(docId) ? prev.filter((id) => id !== docId) : [...prev, docId]
     );
   };
 
@@ -72,9 +72,9 @@ const DocumentsPage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="w-full md:w-64 bg-white shadow-md">
         <div className="p-4">
           <h1 className="text-2xl font-bold">Project_M</h1>
         </div>
@@ -92,7 +92,7 @@ const DocumentsPage = () => {
               <button
               onClick={handleAnswerQuestions}
               disabled={selectedDocuments.length === 0}
-              className={`px-4 py-2 rounded-md ${selectedDocuments.length > 0 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+              className={`w-full px-4 py-2 rounded-md ${selectedDocuments.length > 0 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             >
               Answer Questions
             </button>
@@ -110,26 +110,26 @@ const DocumentsPage = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
+        <header className="bg-white shadow-sm mb-6">
+          <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <h2 className="text-lg font-semibold text-gray-900">All documents</h2>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <main className="max-w-full mx-auto">
           <h1 className="text-3xl font-bold mb-6">Documents</h1>
           
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <input 
               type="file" 
               onChange={handleFileChange} 
-              className="mb-4"
+              className="mb-4 w-full"
             />
             <button
               onClick={handleFileUpload}
               disabled={uploading}
-              className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {uploading ? 'Uploading...' : 'Upload Document'}
             </button>
@@ -181,16 +181,6 @@ const DocumentsPage = () => {
           ) : (
             <p className="text-gray-500">No documents found</p>
           )}
-
-          {/* <div className="mt-6">
-            <button
-              onClick={handleAnswerQuestions}
-              disabled={selectedDocuments.length === 0}
-              className={`px-4 py-2 rounded-md ${selectedDocuments.length > 0 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-            >
-              Answer Questions
-            </button>
-          </div> */}
         </main>
       </div>
     </div>
