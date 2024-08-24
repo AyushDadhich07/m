@@ -202,8 +202,7 @@ MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaw
 
 
 # CORS settings
-CORS_ALLOWED_HEADERS = ['Content-Type', 'User-Email']
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'User-Email', 'X-Requested-With', 'Accept', 'Origin']
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://66bbdad89028aeb9a1537260--voluble-hummingbird-f7c333.netlify.app',
