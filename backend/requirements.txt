@@ -19,3 +19,4 @@ oauthlib
 requests-oauthlib
 pypdf
 boto3
+django-storages
