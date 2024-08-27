@@ -93,7 +93,7 @@ def document_upload(request):
             user = User.objects.get(email=user_email)
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
-
+        print("HEllo")
         if 'file' not in request.FILES:
             return JsonResponse({'error': 'No file uploaded'}, status=400)
 
