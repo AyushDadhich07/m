@@ -28,7 +28,7 @@ class GoogleLogin(SocialLoginView):
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
-        print("HEllo")
+        print("HEllo from signup")
         data = json.loads(request.body.decode('utf-8'))
         first_name = data.get('firstName')
         last_name = data.get('lastName')
@@ -77,6 +77,7 @@ def login(request):
 @csrf_exempt
 def document_upload(request):
     if request.method == 'GET':
+        print("hi from get")
         user_email = request.GET.get('userEmail')
         try:
             user = User.objects.get(email=user_email)
@@ -88,22 +89,23 @@ def document_upload(request):
             return JsonResponse({'error': 'User not found'}, status=404)
         
     elif request.method == 'POST':
+        print("HI")
         user_email = request.POST.get('user_id')
         try:
             user = User.objects.get(email=user_email)
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
-        print("HEllo")
+        print("HEllo from upload file post")
         if 'file' not in request.FILES:
             return JsonResponse({'error': 'No file uploaded'}, status=400)
 
         file = request.FILES['file']
         name = file.name
 
-        document = Document.objects.create(user=user, file=file, name=name)
         
         # Process the document synchronously
         try:
+            document = Document.objects.create(user=user, file=file, name=name)
             success = process_uploaded_document(document.id)
             if success:
                 return JsonResponse({'message': 'Document uploaded and processed successfully', 'document_id': document.id})
@@ -131,18 +133,24 @@ def delete_document(request, document_id):
 
 @csrf_exempt
 def answer_question_view(request):
+    print("Hello")
     if request.method == 'POST':
         try:
+            print("Question time")
             data = json.loads(request.body)
             question = data.get('question')
             document_ids = data.get('documentIds')
 
             if not question or not document_ids:
                 return JsonResponse({'error': 'Question and document IDs are required'}, status=400)
+            
+            print ("Got Question")
 
             all_processed, message = check_documents_processed(document_ids)
             if not all_processed:
                 return JsonResponse({'error': message}, status=400)
+            
+            print("hi from post")
 
             result = answer_question(question, document_ids)
             return JsonResponse({

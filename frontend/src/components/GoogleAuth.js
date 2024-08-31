@@ -5,7 +5,16 @@ import axios from 'axios';
 const GoogleAuth = () => {
   const responseGoogle = (credentialResponse) => {
     console.log(credentialResponse);
-    axios.post('https://m-zbr0.onrender.com/api/auth/google/', {
+    // axios.post('https://m-zbr0.onrender.com/api/auth/google/', {
+    //   credential: credentialResponse.credential,
+    // })
+    // .then(res => {
+    //   console.log(res.data);
+    // })
+    // .catch(err => {
+    //   console.log(err);
+    // });
+    axios.post('http://localhost:8000/api/auth/google/', {
       credential: credentialResponse.credential,
     })
     .then(res => {

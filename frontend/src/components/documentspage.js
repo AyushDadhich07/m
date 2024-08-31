@@ -9,20 +9,21 @@ const DocumentsPage = () => {
   const [uploading, setUploading] = useState(false);
   const userEmail = localStorage.getItem('userEmail');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchDocuments();
-  }, [userEmail]);
-
+  
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
+      // const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
+      const response = await axios.get(`http://localhost:8000/api/documents/?userEmail=${userEmail}`);
       setDocuments(JSON.parse(response.data));
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
   };
-
+  
+    useEffect(() => {
+      fetchDocuments();
+    }, [userEmail]);
+  
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -32,10 +33,16 @@ const DocumentsPage = () => {
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('user_id', userEmail);
-
+    console.log("HI");
     setUploading(true);
     try {
-      const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
+      // const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // });
+      console.log("YO");
+      const response = await axios.post('http://localhost:8000/api/documents/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -58,13 +65,15 @@ const DocumentsPage = () => {
 
   const handleAnswerQuestions = () => {
     if (selectedDocuments.length > 0) {
+      console.log(selectedDocuments);
       navigate('/answer-questions', { state: { selectedDocuments } });
     }
   };
 
   const handleDeleteDocument = async (docId) => {
     try {
-      await axios.delete(`https://m-zbr0.onrender.com/api/documents/${docId}/`);
+      // await axios.delete(`https://m-zbr0.onrender.com/api/documents/${docId}/`);
+      await axios.delete(`http://localhost:8000/api/documents/${docId}/`);
       fetchDocuments(); // Refresh the document list
     } catch (error) {
       console.error('Error deleting document:', error);

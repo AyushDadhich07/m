@@ -22,8 +22,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'm-zbr0.onrender.com',
+    'localhost',
+    'localhost:8000',
     'localhost:3000'
 ]
+
 
 
 # Application definition
@@ -203,7 +206,7 @@ AWS_S3_VERITY=True
 AWS_DEFAULT_ACL=None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
-
+AWS_S3_ADDRESSING_STYLE = "virtual"
 
 # CORS settings
 CORS_ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'User-Email', 'X-Requested-With', 'Accept', 'Origin']

@@ -25,7 +25,8 @@ const LoginPage = () => {
     setLoading(true);
     try {
       console.log(formData);
-      const response = await axios.post('https://m-zbr0.onrender.com/api/login/', formData);
+      // const response = await axios.post('https://m-zbr0.onrender.com/api/login/', formData);
+      const response = await axios.post('http://localhost:8000/api/login/', formData);
       console.log(response.data);
       const { token, userId } = response.data;
       localStorage.setItem('token', token); 
