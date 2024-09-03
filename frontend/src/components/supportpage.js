@@ -19,8 +19,8 @@ const SupportPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/submit-feedback/', formData);
-      const response = await axios.post('http://localhost:8000/api/submit-feedback/', formData);
+      const response = await axios.post('https://m-zbr0.onrender.com/api/submit-feedback/', formData);
+      // const response = await axios.post('http://localhost:8000/api/submit-feedback/', formData);
       console.log(formData);
       alert("Form submitted successfully!")
     } catch (error) {

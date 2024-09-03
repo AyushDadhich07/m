@@ -89,10 +89,12 @@ def document_upload(request):
             return JsonResponse({'error': 'User not found'}, status=404)
         
     elif request.method == 'POST':
-        print("HI")
+        logging("HI")
         user_email = request.POST.get('user_id')
+        print (user_email)
         try:
             user = User.objects.get(email=user_email)
+            print("User found")
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
         print("HEllo from upload file post")

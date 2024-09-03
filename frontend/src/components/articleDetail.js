@@ -7,12 +7,12 @@ const ArticleDetail = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        // axios.get(`https://m-zbr0.onrender.com/api/articles/${id}/`)
-        //     .then(response => setArticle(response.data))
-        //     .catch(error => console.error('Error fetching article:', error));
-            axios.get(`http://localhost:8000/api/articles/${id}/`)
+        axios.get(`https://m-zbr0.onrender.com/api/articles/${id}/`)
             .then(response => setArticle(response.data))
             .catch(error => console.error('Error fetching article:', error));
+            // axios.get(`http://localhost:8000/api/articles/${id}/`)
+            // .then(response => setArticle(response.data))
+            // .catch(error => console.error('Error fetching article:', error));
     }, [id]);
 
     if (!article) return <div className="text-center text-gray-600">Loading...</div>;

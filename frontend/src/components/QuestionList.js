@@ -28,7 +28,8 @@ const QuestionList = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/questions/');
+      // const response = await axios.get('http://localhost:8000/api/questions/');
+      const response=await axios.get('https://m-zbr0.onrender.com/api/questions/');
       setQuestions(response.data);
     } catch (error) {
       console.error("There was an error fetching the questions!", error);
@@ -37,16 +38,16 @@ const QuestionList = () => {
 
   const handleQuestionSubmit = async () => {
     try {
+      await axios.post('https://m-zbr0.onrender.com/api/questions/', {
+        title: newQuestionTitle,
+        content: newQuestionContent,
+        user_email: localStorage.getItem('userEmail'),
+      });
       // await axios.post('http://localhost:8000/api/questions/', {
       //   title: newQuestionTitle,
       //   content: newQuestionContent,
       //   user_email: localStorage.getItem('userEmail'),
       // });
-      await axios.post('http://localhost:8000/api/questions/', {
-        title: newQuestionTitle,
-        content: newQuestionContent,
-        user_email: localStorage.getItem('userEmail'),
-      });
       setNewQuestionTitle('');
       setNewQuestionContent('');
       setError(null);
@@ -58,14 +59,14 @@ const QuestionList = () => {
 
   const handleAnswerSubmit = async (questionId) => {
     try {
-      // await axios.post(`https://m-zbr0.onrender.com/api/questions/${questionId}/answers/`, {
-      //   content: newAnswer,
-      //   user_email: localStorage.getItem('userEmail'),
-      // });
-      await axios.post(`http://localhost:8000/api/questions/${questionId}/answers/`, {
+      await axios.post(`https://m-zbr0.onrender.com/api/questions/${questionId}/answers/`, {
         content: newAnswer,
         user_email: localStorage.getItem('userEmail'),
       });
+      // await axios.post(`http://localhost:8000/api/questions/${questionId}/answers/`, {
+      //   content: newAnswer,
+      //   user_email: localStorage.getItem('userEmail'),
+      // });
       setNewAnswer('');
       setReplyingTo(null);
       fetchQuestions();

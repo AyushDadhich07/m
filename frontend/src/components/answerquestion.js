@@ -19,8 +19,8 @@ const AnswerQuestionsPage = () => {
   useEffect(() => {
     const fetchPredefinedQuestions = async () => {
       try {
-        // const response = await axios.get('https://m-zbr0.onrender.com/api/predefinedQuestion/');
-        const response = await axios.get('http://localhost:8000/api/predefinedQuestion/');
+        const response = await axios.get('https://m-zbr0.onrender.com/api/predefinedQuestion/');
+        // const response = await axios.get('http://localhost:8000/api/predefinedQuestion/');
         setPredefinedQuestions(response.data);
       } catch (error) {
         console.error('Error fetching predefined questions:', error);
@@ -69,14 +69,14 @@ const AnswerQuestionsPage = () => {
     setLoading(true);
     try {
       console.log(selectedDocuments);
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
-      //   question,
-      //   documentIds: selectedDocuments,
-      // });
-      const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
         question,
         documentIds: selectedDocuments,
       });
+      // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      //   question,
+      //   documentIds: selectedDocuments,
+      // });
       setAnswer(response.data.answer);
     } catch (error) {
       console.error('Error getting answer:', error);
@@ -89,14 +89,14 @@ const AnswerQuestionsPage = () => {
     setQuestion(predefinedQuestion);
     setLoading(true);
     try {
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
-      //   question: predefinedQuestion,
-      //   documentIds: selectedDocuments,
-      // });
-      const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
         question: predefinedQuestion,
         documentIds: selectedDocuments,
       });
+      // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      //   question: predefinedQuestion,
+      //   documentIds: selectedDocuments,
+      // });
       setAnswer(response.data.answer);
     } catch (error) {
       console.error('Error getting answer:', error);
@@ -112,14 +112,14 @@ const AnswerQuestionsPage = () => {
 
     for (const question of questions) {
       try {
-        // const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
-        //   question,
-        //   documentIds: selectedDocuments,
-        // });
-        const response = await axios.post('http://localhost:8000/api/answer-question/', {
+        const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
           question,
           documentIds: selectedDocuments,
         });
+        // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+        //   question,
+        //   documentIds: selectedDocuments,
+        // });
         setAnswers((prevAnswers) => [
           ...prevAnswers,
           { question, answer: response.data.answer },
