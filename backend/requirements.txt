@@ -20,3 +20,6 @@ requests-oauthlib
 pypdf
 boto3
 django-storages
+mysqlclient
+docker
+chromadb

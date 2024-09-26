@@ -20,7 +20,7 @@ const AnswerQuestionsPage = () => {
     const fetchPredefinedQuestions = async () => {
       try {
         const response = await axios.get('https://m-zbr0.onrender.com/api/predefinedQuestion/');
-        // const response = await axios.get('http://localhost:8000/api/predefinedQuestion/');
+        // const response = await axios.get('http://localhost:8001/api/predefinedQuestion/');
         setPredefinedQuestions(response.data);
       } catch (error) {
         console.error('Error fetching predefined questions:', error);
@@ -73,7 +73,7 @@ const AnswerQuestionsPage = () => {
         question,
         documentIds: selectedDocuments,
       });
-      // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      // const response = await axios.post('http://localhost:8001/api/answer-question/', {
       //   question,
       //   documentIds: selectedDocuments,
       // });
@@ -93,7 +93,7 @@ const AnswerQuestionsPage = () => {
         question: predefinedQuestion,
         documentIds: selectedDocuments,
       });
-      // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+      // const response = await axios.post('http://localhost:8001/api/answer-question/', {
       //   question: predefinedQuestion,
       //   documentIds: selectedDocuments,
       // });
@@ -116,7 +116,7 @@ const AnswerQuestionsPage = () => {
           question,
           documentIds: selectedDocuments,
         });
-        // const response = await axios.post('http://localhost:8000/api/answer-question/', {
+        // const response = await axios.post('http://localhost:8001/api/answer-question/', {
         //   question,
         //   documentIds: selectedDocuments,
         // });

@@ -26,7 +26,7 @@ const Signup = () => {
     try {
       console.log(formData);
       const response = await axios.post('https://m-zbr0.onrender.com/api/signup/', formData);
-      // const response = await axios.post('http://localhost:8000/api/signup/', formData);
+      // const response = await axios.post('http://localhost:8001/api/signup/', formData);
       console.log(response.data);
       setLoading(false);
       navigate('/login');

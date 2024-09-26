@@ -10,7 +10,7 @@ const ProfilePage = () => {
     const fetchUser = async () => {
       const user_email = localStorage.getItem('userEmail');
       try {
-        const response = await axios.get(`http://localhost:8000/api/user/?user_email=${user_email}`);
+        const response = await axios.get(`http://localhost:8001/api/user/?user_email=${user_email}`);
         setProfile(response.data);
         console.log(profile);
       } catch (error) {

@@ -12,8 +12,8 @@ const CompareCompanies = () => {
 
   const fetchCompanies = async () => {
     try {
-      // const response = await axios.get('https://m-zbr0.onrender.com/company/profile/');
-      const response = await axios.get('https://localhost:8000/company/profile/');
+      const response = await axios.get('https://m-zbr0.onrender.com/company/profile/');
+      // const response = await axios.get('https://localhost:8001/company/profile/');
       setCompanies(response.data);
     } catch (error) {
       console.error('Error fetching companies:', error);

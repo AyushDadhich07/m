@@ -7,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
 from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer,PredefinedQuestionSerializer
 from rest_framework.permissions import IsAuthenticated
-from .ai_processing import process_uploaded_document, answer_question, check_documents_processed
+from .ai_processing2 import process_uploaded_document, answer_question, check_documents_processed
 import logging
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse, HttpResponse
@@ -89,7 +89,7 @@ def document_upload(request):
             return JsonResponse({'error': 'User not found'}, status=404)
         
     elif request.method == 'POST':
-        logging("HI")
+        logging.info("HI")
         user_email = request.POST.get('user_id')
         print (user_email)
         try:
@@ -154,10 +154,11 @@ def answer_question_view(request):
             
             print("hi from post")
 
-            result = answer_question(question, document_ids)
+            result,similer_docss = answer_question(question, document_ids)
+            # print(result)
             return JsonResponse({
-                'answer': result['answer'],
-                'sources': result['sources']
+                'answer': result,
+                # 'sources': similer_docss
             })
         except Exception as e:
             logging.error(f"Error answering question: {str(e)}")
