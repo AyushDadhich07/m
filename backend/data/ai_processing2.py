@@ -52,9 +52,10 @@ def upload_to_s3(local_path, s3_key):
     """Upload a local file to S3."""
     s3_client.upload_file(local_path, s3_bucket_name, s3_key)
 
-def download_from_s3(s3_key, local_path):
-    """Download a file from S3."""
-    s3_client.download_file(s3_bucket_name, s3_key, local_path)
+def download_from_s3_to_memory(s3_key):
+    """Download a file from S3 into memory."""
+    s3_object = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_key)
+    return BytesIO(s3_object['Body'].read())
 
 def process_document(file_source):
     """
@@ -64,23 +65,26 @@ def process_document(file_source):
         if file_source.startswith(("http://", "https://")):
             # Handle URL case
             logging.info("Downloading file from URL...")
-            try:
-                response = requests.get(file_source)
-                response.raise_for_status()
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Error downloading file from URL: {e}")
-                raise
-
+            response = requests.get(file_source)
+            response.raise_for_status()
             # Write content to a temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
                 temp_file.write(response.content)
-                temp_file_path = temp_file.name
-
-            loader = PyPDFLoader(temp_file_path)
+                temp_file_path = temp_file.name  # Get the temporary file path
 
         else:
-            # Handle local file path
-            loader = PyPDFLoader(file_source)
+            # Here, we assume file_source is a key for S3
+            logging.info("Downloading file from S3...")
+            print(f"Attempting to download from S3: {file_source}")
+            file_content = download_from_s3_to_memory(file_source)
+
+            # Write the S3 content to a temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(file_content.read())
+                temp_file_path = temp_file.name  # Get the temporary file path
+
+        # Load the document using the temporary file path
+        loader = PyPDFLoader(temp_file_path)
 
         # Load and split the document
         pages = loader.load()
@@ -95,14 +99,11 @@ def process_document(file_source):
     except Exception as e:
         logging.error(f"Error processing document: {e}")
         raise
-
     finally:
-        if 'temp_file_path' in locals():
-            try:
-                os.remove(temp_file_path)
-                logging.info("Temporary file removed.")
-            except Exception as e:
-                logging.error(f"Error removing temporary file: {e}")
+        # Clean up temporary file
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+
 
 def get_s3_file_url(bucket_name, s3_key, region_name='eu-north-1'):
     """Generate a URL for the S3 file."""
@@ -126,13 +127,14 @@ def process_uploaded_document(document_id):
     try:
         document = Document.objects.get(id=document_id)
         s3_key = document.file.name
-
-        s3_file_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
-
+        file_obj = document.file 
+        # upload_to_s3(s3_file_url,s3_key)
+        s3_client.upload_fileobj(file_obj,s3_bucket_name,s3_key)
+        print("file uploaded")
+        s3_file_url = get_s3_file_url(s3_bucket_name,s3_key, s3_region)
         logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
-        upload_to_s3(s3_file_url,s3_key)
-        texts = process_document(s3_file_url)
 
+        texts = process_document(s3_file_url)
         # Log the type and content of texts
         logging.info(f"Type of texts: {type(texts)}")
 

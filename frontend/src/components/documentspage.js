@@ -12,8 +12,8 @@ const DocumentsPage = () => {
   
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
-      // const response = await axios.get(`http://localhost:8001/api/documents/?userEmail=${userEmail}`);
+      // const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
+      const response = await axios.get(`http://localhost:8001/api/documents/?userEmail=${userEmail}`);
       setDocuments(JSON.parse(response.data));
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -36,16 +36,16 @@ const DocumentsPage = () => {
     console.log("HI");
     setUploading(true);
     try {
-      const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      // const response = await axios.post('http://localhost:8001/api/documents/', formData, {
+      // const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
       //   headers: {
       //     'Content-Type': 'multipart/form-data',
       //   },
       // });
+      const response = await axios.post('http://localhost:8001/api/documents/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       console.log("YO");
       console.log(response.data);
       fetchDocuments();
