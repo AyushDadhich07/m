@@ -126,10 +126,11 @@ def process_uploaded_document(document_id):
     try:
         document = Document.objects.get(id=document_id)
         s3_key = document.file.name
+
         s3_file_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
 
         logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
-
+        upload_to_s3(s3_file_url,s3_key)
         texts = process_document(s3_file_url)
 
         # Log the type and content of texts
