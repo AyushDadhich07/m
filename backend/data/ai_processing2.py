@@ -193,6 +193,7 @@ def process_uploaded_document(document_id):
         #     ids=ids,
         #     collection_name=collection_name,
         # )
+        chromadb.api.client.SharedSystemClient.clear_system_cache()
         vector_store = Chroma.from_texts(
             texts=document_texts,
             embedding=embeddings,
@@ -200,7 +201,7 @@ def process_uploaded_document(document_id):
             collection_name=collection_name
         )
 
-    
+        
 
 
         logging.info(f"Added documents to vector store")
