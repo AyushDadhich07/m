@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import uuid
 import logging
 import boto3
@@ -236,22 +237,56 @@ def process_uploaded_document(document_id):
 
 
 
+# def serialize_vector_store(vector_store):
+#     """
+#     Serialize the vector store data to a JSON format for uploading to AWS S3.
+#     """
+#     # Convert the vector store to a Python dictionary
+#     vector_data_dict = {
+#         "collection_name": vector_store._collection.name,
+#         "documents": vector_store._collection.get(),
+#         "embeddings": vector_store._collection.get(include=['embeddings'])['embeddings'],
+#     }
+    
+#     # Serialize dictionary to JSON string
+#     json_data = json.dumps(vector_data_dict, indent=2)  # Converts to JSON format with indentation for readability
+
+#     # Convert JSON string to a binary format compatible with S3
+#     json_bytes = BytesIO(json_data.encode('utf-8'))  # Convert to bytes for S3 upload
+
+#     return json_bytes
+
 def serialize_vector_store(vector_store):
     """
     Serialize the vector store data to a JSON format for uploading to AWS S3.
     """
+    # Get all data from the collection
+    collection_data = vector_store._collection.get(include=['embeddings', 'documents', 'metadatas'])
+    
     # Convert the vector store to a Python dictionary
     vector_data_dict = {
         "collection_name": vector_store._collection.name,
-        "documents": vector_store._collection.get(),
-        "embeddings": vector_store._collection.get(include=['embeddings'])['embeddings'],
+        "documents": collection_data['documents'],
+        "metadatas": collection_data['metadatas'],
+        "embeddings": [emb.tolist() if isinstance(emb, np.ndarray) else emb for emb in collection_data['embeddings']],
     }
     
+    # Custom JSON encoder to handle numpy types
+    class NumpyEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, np.integer):
+                return int(obj)
+            elif isinstance(obj, np.floating):
+                return float(obj)
+            elif isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return super(NumpyEncoder, self).default(obj)
+    
     # Serialize dictionary to JSON string
-    json_data = json.dumps(vector_data_dict, indent=2)  # Converts to JSON format with indentation for readability
-
+    json_data = json.dumps(vector_data_dict, indent=2, cls=NumpyEncoder)
+    
     # Convert JSON string to a binary format compatible with S3
-    json_bytes = BytesIO(json_data.encode('utf-8'))  # Convert to bytes for S3 upload
+    json_bytes = BytesIO(json_data.encode('utf-8'))
 
     return json_bytes
 
