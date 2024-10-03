@@ -22,4 +22,5 @@ boto3
 django-storages
 mysqlclient
 docker
-chromadb
+faiss-cpu
+# chromadb
