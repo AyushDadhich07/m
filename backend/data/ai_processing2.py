@@ -691,7 +691,12 @@ def answer_question(question, document_ids):
                         raise ValueError(f"Downloaded file content for {s3_key} is empty.")
 
                     try:
-                        faiss_index = FAISS.deserialize_from_bytes(file_content, embeddings)
+                        # Enable safe deserialization
+                        faiss_index = FAISS.deserialize_from_bytes(
+                            file_content, 
+                            embeddings,
+                            allow_dangerous_deserialization=True  # Add this parameter
+                        )
                         vector_store_cache[s3_key] = faiss_index
                         logging.info(f"Loaded and cached FAISS index for collection {s3_key}.")
                     except Exception as e:
