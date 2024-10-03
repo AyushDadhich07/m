@@ -59,6 +59,53 @@ def download_from_s3_to_memory(s3_key):
     s3_object = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_key)
     return BytesIO(s3_object['Body'].read())
 
+def process_document(file_source):
+    """
+    Process a document from a file path or URL.
+    """
+    try:
+        if file_source.startswith(("http://", "https://")):
+            # Handle URL case
+            logging.info("Downloading file from URL...")
+            response = requests.get(file_source)
+            response.raise_for_status()
+            # Write content to a temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(response.content)
+                temp_file_path = temp_file.name  # Get the temporary file path
+
+        else:
+            # Here, we assume file_source is a key for S3
+            logging.info("Downloading file from S3...")
+            print(f"Attempting to download from S3: {file_source}")
+            file_content = download_from_s3_to_memory(file_source)
+
+            # Write the S3 content to a temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(file_content.read())
+                temp_file_path = temp_file.name  # Get the temporary file path
+
+        # Load the document using the temporary file path
+        loader = PyPDFLoader(temp_file_path)
+
+        # Load and split the document
+        pages = loader.load()
+        if not pages:
+            logging.warning("No pages found in the document.")
+            return []
+
+        # Split document text into chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return text_splitter.split_documents(pages)
+
+    except Exception as e:
+        logging.error(f"Error processing document: {e}")
+        raise
+    finally:
+        # Clean up temporary file
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+
 
 #chlra
 # def process_uploaded_document(document_id):
@@ -249,116 +296,116 @@ def retry_operation(operation, max_retries=5, delay=1):
             time.sleep(delay)
     raise Exception(f"Operation failed after {max_retries} retries.")
 
-def process_uploaded_document(document_id):
-    """Process the uploaded document by downloading it from S3 and extracting information."""
-    logging.info(f"Starting document processing for ID: {document_id}")
+# def process_uploaded_document(document_id):
+#     """Process the uploaded document by downloading it from S3 and extracting information."""
+#     logging.info(f"Starting document processing for ID: {document_id}")
 
-    try:
-        document = Document.objects.get(id=document_id)
-        s3_key = document.file.name
-        file_obj = document.file 
-        # upload_to_s3(s3_file_url,s3_key)
-        s3_client.upload_fileobj(file_obj,s3_bucket_name,s3_key)
-        print("file uploaded")
-        s3_file_url = get_s3_file_url(s3_bucket_name,s3_key, s3_region)
-        logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
+#     try:
+#         document = Document.objects.get(id=document_id)
+#         s3_key = document.file.name
+#         file_obj = document.file 
+#         # upload_to_s3(s3_file_url,s3_key)
+#         s3_client.upload_fileobj(file_obj,s3_bucket_name,s3_key)
+#         print("file uploaded")
+#         s3_file_url = get_s3_file_url(s3_bucket_name,s3_key, s3_region)
+#         logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
 
-        texts = process_document(s3_file_url)
-        # Log the type and content of texts
-        logging.info(f"Type of texts: {type(texts)}")
+#         texts = process_document(s3_file_url)
+#         # Log the type and content of texts
+#         logging.info(f"Type of texts: {type(texts)}")
 
-        # Initialize the list to hold document contents
-        document_texts = []
+#         # Initialize the list to hold document contents
+#         document_texts = []
 
-        if isinstance(texts, list):
-            for item in texts:
-                if isinstance(item, dict):
-                    # Assuming each dictionary has a 'page_content' field
-                    document_texts.append(item.get('page_content', ''))
-                elif isinstance(item, str):
-                    # Directly append string items
-                    document_texts.append(item)
-                else:
-                    # Convert unexpected formats to string
-                    document_texts.append(str(item))
-                    logging.warning("Converted unexpected format to string.")
-        elif isinstance(texts, str):
-            # Handle single string case
-            document_texts.append(texts)
-            logging.warning("Converted single text string to list.")
+#         if isinstance(texts, list):
+#             for item in texts:
+#                 if isinstance(item, dict):
+#                     # Assuming each dictionary has a 'page_content' field
+#                     document_texts.append(item.get('page_content', ''))
+#                 elif isinstance(item, str):
+#                     # Directly append string items
+#                     document_texts.append(item)
+#                 else:
+#                     # Convert unexpected formats to string
+#                     document_texts.append(str(item))
+#                     logging.warning("Converted unexpected format to string.")
+#         elif isinstance(texts, str):
+#             # Handle single string case
+#             document_texts.append(texts)
+#             logging.warning("Converted single text string to list.")
 
-        ids = [str(uuid.uuid4()) for _ in range(len(document_texts))]
+#         ids = [str(uuid.uuid4()) for _ in range(len(document_texts))]
 
-        # print(document_texts)
+#         # print(document_texts)
 
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+#         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
-        # Define collection_name
-        collection_name = f"document_{document_id}_{uuid.uuid4().hex}"
+#         # Define collection_name
+#         collection_name = f"document_{document_id}_{uuid.uuid4().hex}"
 
-        # Replace localhost with remote ChromaDB or use Pinecone
-        # client = chromadb.HttpClient(
-        #     host="localhost",  # Replace with actual host
-        #     port=8000,
-        #     ssl=False,
-        #     headers=None,
-        #     settings=Settings(),
-        #     tenant=DEFAULT_TENANT,
-        #     database=DEFAULT_DATABASE,
-        # )
+#         # Replace localhost with remote ChromaDB or use Pinecone
+#         # client = chromadb.HttpClient(
+#         #     host="localhost",  # Replace with actual host
+#         #     port=8000,
+#         #     ssl=False,
+#         #     headers=None,
+#         #     settings=Settings(),
+#         #     tenant=DEFAULT_TENANT,
+#         #     database=DEFAULT_DATABASE,
+#         # )
 
-        logging.info(f"Adding texts to collection:")
+#         logging.info(f"Adding texts to collection:")
 
-        # collection = client.get_or_create_collection(collection_name)
-        # collection.add(documents=document_texts, ids=ids)
+#         # collection = client.get_or_create_collection(collection_name)
+#         # collection.add(documents=document_texts, ids=ids)
 
-        logging.info("Texts added")
+#         logging.info("Texts added")
 
-        logging.info(f"Creating vector store from documents")
+#         logging.info(f"Creating vector store from documents")
 
-        # vector_store = Chroma.from_texts(
-        #     texts=document_texts,
-        #     embedding=embeddings,
-        #     ids=ids,
-        #     collection_name=collection_name,
-        # )
-        chromadb.api.client.SharedSystemClient.clear_system_cache()
-        vector_store = Chroma.from_texts(
-            texts=document_texts,
-            embedding=embeddings,
-            ids=ids,
-            collection_name=collection_name
-        )
+#         # vector_store = Chroma.from_texts(
+#         #     texts=document_texts,
+#         #     embedding=embeddings,
+#         #     ids=ids,
+#         #     collection_name=collection_name,
+#         # )
+#         chromadb.api.client.SharedSystemClient.clear_system_cache()
+#         vector_store = Chroma.from_texts(
+#             texts=document_texts,
+#             embedding=embeddings,
+#             ids=ids,
+#             collection_name=collection_name
+#         )
 
         
 
 
-        logging.info(f"Added documents to vector store")
+#         logging.info(f"Added documents to vector store")
 
-        print(vector_store)
-        print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
-        print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
+#         print(vector_store)
+#         print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
+#         print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
 
-        # Instead of persisting locally, upload directly to S3
-        vector_data = serialize_vector_store(vector_store)  # Implement serialization logic
-        s3_key = f"chroma/{document_id}_vector_store.json"
-        s3_client.put_object(Body=vector_data, Bucket=s3_bucket_name, Key=s3_key)
-        chroma_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
+#         # Instead of persisting locally, upload directly to S3
+#         vector_data = serialize_vector_store(vector_store)  # Implement serialization logic
+#         s3_key = f"chroma/{document_id}_vector_store.json"
+#         s3_client.put_object(Body=vector_data, Bucket=s3_bucket_name, Key=s3_key)
+#         chroma_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
 
-        logging.info("ChromaDB vector store uploaded to S3.")
+#         logging.info("ChromaDB vector store uploaded to S3.")
 
-        ProcessedDocument.objects.create(document=document, collection_name=s3_key)
-        document.processed = True
-        document.save()
+#         ProcessedDocument.objects.create(document=document, collection_name=s3_key)
+#         document.processed = True
+#         document.save()
 
-        logging.info(f"Document processing completed for ID: {document_id} with URL: {chroma_url}")
-        return True
-    except ObjectDoesNotExist:
-        logging.error(f"Document with ID {document_id} does not exist.")
-        return False
-    except Exception as e:
-        logging.error(f"Error processing document {document_id}: {e}")
-        return False
+#         logging.info(f"Document processing completed for ID: {document_id} with URL: {chroma_url}")
+#         return True
+#     except ObjectDoesNotExist:
+#         logging.error(f"Document with ID {document_id} does not exist.")
+#         return False
+#     except Exception as e:
+#         logging.error(f"Error processing document {document_id}: {e}")
+#         return False
 
 
 
