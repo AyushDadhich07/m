@@ -14,7 +14,8 @@ from django.core.files.base import ContentFile
 from botocore.exceptions import NoCredentialsError, ClientError
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+# from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -58,52 +59,179 @@ def download_from_s3_to_memory(s3_key):
     s3_object = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_key)
     return BytesIO(s3_object['Body'].read())
 
-def process_document(file_source):
-    """
-    Process a document from a file path or URL.
-    """
+
+#chlra
+# def process_uploaded_document(document_id):
+#     """Process the uploaded document by downloading it from S3 and extracting information."""
+#     logging.info(f"Starting document processing for ID: {document_id}")
+
+#     try:
+#         document = Document.objects.get(id=document_id)
+#         s3_key = document.file.name
+#         file_obj = document.file 
+#         # upload_to_s3(s3_file_url,s3_key)
+#         s3_client.upload_fileobj(file_obj,s3_bucket_name,s3_key)
+#         print("file uploaded")
+#         s3_file_url = get_s3_file_url(s3_bucket_name,s3_key, s3_region)
+#         logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
+
+#         texts = process_document(s3_file_url)
+#         # Log the type and content of texts
+#         logging.info(f"Type of texts: {type(texts)}")
+
+#         # Initialize the list to hold document contents
+#         document_texts = []
+
+#         if isinstance(texts, list):
+#             for item in texts:
+#                 if isinstance(item, dict):
+#                     # Assuming each dictionary has a 'page_content' field
+#                     document_texts.append(item.get('page_content', ''))
+#                 elif isinstance(item, str):
+#                     # Directly append string items
+#                     document_texts.append(item)
+#                 else:
+#                     # Convert unexpected formats to string
+#                     document_texts.append(str(item))
+#                     logging.warning("Converted unexpected format to string.")
+#         elif isinstance(texts, str):
+#             # Handle single string case
+#             document_texts.append(texts)
+#             logging.warning("Converted single text string to list.")
+
+#         ids = [str(uuid.uuid4()) for _ in range(len(document_texts))]
+
+#         # print(document_texts)
+
+#         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+
+#         # Define collection_name
+#         collection_name = f"document_{document_id}_{uuid.uuid4().hex}"
+
+#         # Replace localhost with remote ChromaDB or use Pinecone
+#         # client = chromadb.HttpClient(
+#         #     host="localhost",  # Replace with actual host
+#         #     port=8000,
+#         #     ssl=False,
+#         #     headers=None,
+#         #     settings=Settings(),
+#         #     tenant=DEFAULT_TENANT,
+#         #     database=DEFAULT_DATABASE,
+#         # )
+
+#         logging.info(f"Adding texts to collection:")
+
+#         # collection = client.get_or_create_collection(collection_name)
+#         # collection.add(documents=document_texts, ids=ids)
+
+#         logging.info("Texts added")
+
+#         logging.info(f"Creating vector store from documents")
+
+#         # vector_store = Chroma.from_texts(
+#         #     texts=document_texts,
+#         #     embedding=embeddings,
+#         #     ids=ids,
+#         #     collection_name=collection_name,
+#         # )
+#         chromadb.api.client.SharedSystemClient.clear_system_cache()
+#         vector_store = Chroma.from_texts(
+#             texts=document_texts,
+#             embedding=embeddings,
+#             ids=ids,
+#             collection_name=collection_name
+#         )
+
+        
+
+
+#         logging.info(f"Added documents to vector store")
+
+#         print(vector_store)
+#         print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
+#         print(dir(vector_store))  # This will show all available attributes and methods for Chroma object
+
+#         # Instead of persisting locally, upload directly to S3
+#         vector_data = serialize_vector_store(vector_store)  # Implement serialization logic
+#         s3_key = f"chroma/{document_id}_vector_store.json"
+#         s3_client.put_object(Body=vector_data, Bucket=s3_bucket_name, Key=s3_key)
+#         chroma_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
+
+#         logging.info("ChromaDB vector store uploaded to S3.")
+
+#         ProcessedDocument.objects.create(document=document, collection_name=s3_key)
+#         document.processed = True
+#         document.save()
+
+#         logging.info(f"Document processing completed for ID: {document_id} with URL: {chroma_url}")
+#         return True
+#     except ObjectDoesNotExist:
+#         logging.error(f"Document with ID {document_id} does not exist.")
+#         return False
+#     except Exception as e:
+#         logging.error(f"Error processing document {document_id}: {e}")
+#         return False
+
+
+def process_uploaded_document(document_id):
+    """Process the uploaded document by downloading it from S3 and extracting information."""
+    logging.info(f"Starting document processing for ID: {document_id}")
+
     try:
-        if file_source.startswith(("http://", "https://")):
-            # Handle URL case
-            logging.info("Downloading file from URL...")
-            response = requests.get(file_source)
-            response.raise_for_status()
-            # Write content to a temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                temp_file.write(response.content)
-                temp_file_path = temp_file.name  # Get the temporary file path
+        document = Document.objects.get(id=document_id)
+        s3_key = document.file.name
+        file_obj = document.file 
+        s3_client.upload_fileobj(file_obj, s3_bucket_name, s3_key)
+        print("file uploaded")
+        s3_file_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
+        logging.info(f"S3 File URL for document {document_id}: {s3_file_url}")
 
-        else:
-            # Here, we assume file_source is a key for S3
-            logging.info("Downloading file from S3...")
-            print(f"Attempting to download from S3: {file_source}")
-            file_content = download_from_s3_to_memory(file_source)
+        texts = process_document(s3_file_url)
+        logging.info(f"Type of texts: {type(texts)}")
 
-            # Write the S3 content to a temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                temp_file.write(file_content.read())
-                temp_file_path = temp_file.name  # Get the temporary file path
+        document_texts = []
+        for item in texts:
+            if isinstance(item, dict):
+                document_texts.append(item.get('page_content', ''))
+            elif isinstance(item, str):
+                document_texts.append(item)
+            else:
+                document_texts.append(str(item))
+                logging.warning("Converted unexpected format to string.")
 
-        # Load the document using the temporary file path
-        loader = PyPDFLoader(temp_file_path)
+        ids = [str(uuid.uuid4()) for _ in range(len(document_texts))]
 
-        # Load and split the document
-        pages = loader.load()
-        if not pages:
-            logging.warning("No pages found in the document.")
-            return []
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
-        # Split document text into chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        return text_splitter.split_documents(pages)
+        logging.info(f"Creating FAISS index from documents")
 
+        faiss_index = FAISS.from_texts(
+            texts=document_texts,
+            embedding=embeddings,
+            metadatas=[{"id": id} for id in ids]
+        )
+
+        logging.info(f"Added documents to FAISS index")
+
+        # Serialize FAISS index
+        faiss_bytes = faiss_index.serialize_to_bytes()
+        
+        # Upload serialized FAISS index to S3
+        s3_key = f"faiss/{document_id}_faiss_index.pkl"
+        s3_client.put_object(Body=faiss_bytes, Bucket=s3_bucket_name, Key=s3_key)
+        faiss_url = get_s3_file_url(s3_bucket_name, s3_key, s3_region)
+
+        logging.info("FAISS index uploaded to S3.")
+
+        ProcessedDocument.objects.create(document=document, collection_name=s3_key)
+        document.processed = True
+        document.save()
+
+        logging.info(f"Document processing completed for ID: {document_id} with URL: {faiss_url}")
+        return True
     except Exception as e:
-        logging.error(f"Error processing document: {e}")
-        raise
-    finally:
-        # Clean up temporary file
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+        logging.error(f"Error processing document {document_id}: {e}")
+        return False
 
 
 def get_s3_file_url(bucket_name, s3_key, region_name='eu-north-1'):
@@ -494,18 +622,18 @@ vector_store_cache = {}
 def answer_question(question, document_ids):
     """Answer a question based on processed documents."""
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-    vector_stores = []
+    faiss_indexes = []
 
     for doc_id in document_ids:
-        vector_store = None
+        faiss_index = None
         try:
             processed_doc = ProcessedDocument.objects.get(document_id=doc_id)
             s3_key = processed_doc.collection_name
             s3_url = f"https://maxiumsys.s3.eu-north-1.amazonaws.com/{s3_key}"
 
             if s3_key in vector_store_cache:
-                vector_store = vector_store_cache[s3_key]
-                logging.info(f"Using cached vector store for collection {s3_key}.")
+                faiss_index = vector_store_cache[s3_key]
+                logging.info(f"Using cached FAISS index for collection {s3_key}.")
             else:
                 response = requests.get(s3_url)
                 if response.status_code == 200:
@@ -516,99 +644,176 @@ def answer_question(question, document_ids):
                         raise ValueError(f"Downloaded file content for {s3_key} is empty.")
 
                     try:
-                        vector_store_data = json.loads(file_content)
-                        logging.info(f"JSON structure keys: {vector_store_data.keys()}")
-                        
-                        collection_name = vector_store_data.get('collection_name', s3_key)
-                        documents = vector_store_data.get('documents', [])
-                        document_embeddings = vector_store_data.get('embeddings', [])
-
-                        logging.info(f"Documents type: {type(documents)}")
-                        if isinstance(documents, list):
-                            logging.info(f"First document structure: {documents[0] if documents else 'No documents'}")
-                        elif isinstance(documents, dict):
-                            logging.info(f"Documents keys: {documents.keys()}")
-
-                        # Handle different possible structures
-                        texts = []
-                        ids = []
-                        if isinstance(documents, list):
-                            for doc in documents:
-                                if isinstance(doc, dict):
-                                    texts.append(doc.get('text', doc.get('page_content', '')))
-                                    ids.append(doc.get('id', str(uuid.uuid4())))
-                                elif isinstance(doc, str):
-                                    texts.append(doc)
-                                    ids.append(str(uuid.uuid4()))
-                        elif isinstance(documents, dict):
-                            texts = documents.get('texts', []) or documents.get('documents', [])
-                            ids = documents.get('ids', []) or [str(uuid.uuid4()) for _ in texts]
-
-                        if not texts:
-                            raise ValueError(f"No valid documents found in the data for {s3_key}")
-
-                        vector_store = Chroma.from_texts(
-                            texts=texts,
-                            embedding=embeddings,
-                            ids=ids,
-                            collection_name=collection_name
-                        )
-
-                        if document_embeddings:
-                            vector_store._collection.upsert(
-                                ids=ids,
-                                embeddings=document_embeddings,
-                                documents=texts
-                            )
-                        
-                        vector_store_cache[s3_key] = vector_store
-                        logging.info(f"Loaded and cached vector store for collection {s3_key}.")
-                    except json.JSONDecodeError as e:
-                        logging.error(f"Error parsing JSON data for {s3_key}: {e}")
+                        faiss_index = FAISS.deserialize_from_bytes(file_content, embeddings)
+                        vector_store_cache[s3_key] = faiss_index
+                        logging.info(f"Loaded and cached FAISS index for collection {s3_key}.")
                     except Exception as e:
-                        logging.error(f"Error loading vector store from JSON for {s3_key}: {e}")
+                        logging.error(f"Error loading FAISS index for {s3_key}: {e}")
                         logging.exception("Stack trace:")
                 else:
-                    logging.warning(f"Failed to download vector store file from {s3_url}. Status code: {response.status_code}")
+                    logging.warning(f"Failed to download FAISS index from {s3_url}. Status code: {response.status_code}")
 
-            if vector_store is not None:
-                vector_stores.append(vector_store)
+            if faiss_index is not None:
+                faiss_indexes.append(faiss_index)
             else:
-                logging.warning(f"Vector store for document {doc_id} was not created or loaded.")
+                logging.warning(f"FAISS index for document {doc_id} was not created or loaded.")
 
         except ProcessedDocument.DoesNotExist:
             logging.warning(f"ProcessedDocument for document_id {doc_id} does not exist. Skipping.")
         except ClientError as e:
             logging.error(f"Error retrieving files from S3 for document {doc_id}: {e}")
         except Exception as e:
-            logging.error(f"Error retrieving vector store for document {doc_id}: {e}")
+            logging.error(f"Error retrieving FAISS index for document {doc_id}: {e}")
             logging.exception("Stack trace:")
 
-    if not vector_stores:
+    if not faiss_indexes:
         raise ValueError("No valid processed documents found for the given document IDs.")
 
     similar_docs = []
-    for store in vector_stores:
-        if store is not None:
+    for index in faiss_indexes:
+        if index is not None:
             try:
-                search_results = store.similarity_search(question)
+                search_results = index.similarity_search(question)
                 if not search_results:
-                    logging.warning("No similar documents found in the vector store.")
+                    logging.warning("No similar documents found in the FAISS index.")
                 similar_docs.extend(search_results)
             except Exception as e:
                 logging.error(f"Error during similarity search: {e}")
                 logging.exception("Stack trace:")
         else:
-            logging.warning("Skipping similarity search for None vector store.")
+            logging.warning("Skipping similarity search for None FAISS index.")
 
     if not similar_docs:
         raise ValueError("No similar documents found.")
 
-    # Set up the QA chain using the first non-None vector store
-    qa_chain = setup_qa_chain(next(store for store in vector_stores if store is not None))
+    # Set up the QA chain using the first non-None FAISS index
+    qa_chain = setup_qa_chain(next(index for index in faiss_indexes if index is not None))
     response = qa_chain({"query": question})
     logging.info(f"Question answered: {response['result']}")
-    return response['result'],similar_docs
+    return response['result'], similar_docs
+
+
+#chlra hai neeche wala but slow
+
+# def answer_question(question, document_ids):
+#     """Answer a question based on processed documents."""
+#     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+#     vector_stores = []
+
+#     for doc_id in document_ids:
+#         vector_store = None
+#         try:
+#             processed_doc = ProcessedDocument.objects.get(document_id=doc_id)
+#             s3_key = processed_doc.collection_name
+#             s3_url = f"https://maxiumsys.s3.eu-north-1.amazonaws.com/{s3_key}"
+
+#             if s3_key in vector_store_cache:
+#                 vector_store = vector_store_cache[s3_key]
+#                 logging.info(f"Using cached vector store for collection {s3_key}.")
+#             else:
+#                 response = requests.get(s3_url)
+#                 if response.status_code == 200:
+#                     file_content = response.content
+#                     logging.info(f"Downloaded {s3_key} with size {len(file_content)} bytes.")
+
+#                     if not file_content:
+#                         raise ValueError(f"Downloaded file content for {s3_key} is empty.")
+
+#                     try:
+#                         vector_store_data = json.loads(file_content)
+#                         logging.info(f"JSON structure keys: {vector_store_data.keys()}")
+                        
+#                         collection_name = vector_store_data.get('collection_name', s3_key)
+#                         documents = vector_store_data.get('documents', [])
+#                         document_embeddings = vector_store_data.get('embeddings', [])
+
+#                         logging.info(f"Documents type: {type(documents)}")
+#                         if isinstance(documents, list):
+#                             logging.info(f"First document structure: {documents[0] if documents else 'No documents'}")
+#                         elif isinstance(documents, dict):
+#                             logging.info(f"Documents keys: {documents.keys()}")
+
+#                         # Handle different possible structures
+#                         texts = []
+#                         ids = []
+#                         if isinstance(documents, list):
+#                             for doc in documents:
+#                                 if isinstance(doc, dict):
+#                                     texts.append(doc.get('text', doc.get('page_content', '')))
+#                                     ids.append(doc.get('id', str(uuid.uuid4())))
+#                                 elif isinstance(doc, str):
+#                                     texts.append(doc)
+#                                     ids.append(str(uuid.uuid4()))
+#                         elif isinstance(documents, dict):
+#                             texts = documents.get('texts', []) or documents.get('documents', [])
+#                             ids = documents.get('ids', []) or [str(uuid.uuid4()) for _ in texts]
+
+#                         if not texts:
+#                             raise ValueError(f"No valid documents found in the data for {s3_key}")
+
+#                         vector_store = Chroma.from_texts(
+#                             texts=texts,
+#                             embedding=embeddings,
+#                             ids=ids,
+#                             collection_name=collection_name
+#                         )
+
+#                         if document_embeddings:
+#                             vector_store._collection.upsert(
+#                                 ids=ids,
+#                                 embeddings=document_embeddings,
+#                                 documents=texts
+#                             )
+                        
+#                         vector_store_cache[s3_key] = vector_store
+#                         logging.info(f"Loaded and cached vector store for collection {s3_key}.")
+#                     except json.JSONDecodeError as e:
+#                         logging.error(f"Error parsing JSON data for {s3_key}: {e}")
+#                     except Exception as e:
+#                         logging.error(f"Error loading vector store from JSON for {s3_key}: {e}")
+#                         logging.exception("Stack trace:")
+#                 else:
+#                     logging.warning(f"Failed to download vector store file from {s3_url}. Status code: {response.status_code}")
+
+#             if vector_store is not None:
+#                 vector_stores.append(vector_store)
+#             else:
+#                 logging.warning(f"Vector store for document {doc_id} was not created or loaded.")
+
+#         except ProcessedDocument.DoesNotExist:
+#             logging.warning(f"ProcessedDocument for document_id {doc_id} does not exist. Skipping.")
+#         except ClientError as e:
+#             logging.error(f"Error retrieving files from S3 for document {doc_id}: {e}")
+#         except Exception as e:
+#             logging.error(f"Error retrieving vector store for document {doc_id}: {e}")
+#             logging.exception("Stack trace:")
+
+#     if not vector_stores:
+#         raise ValueError("No valid processed documents found for the given document IDs.")
+
+#     similar_docs = []
+#     for store in vector_stores:
+#         if store is not None:
+#             try:
+#                 search_results = store.similarity_search(question)
+#                 if not search_results:
+#                     logging.warning("No similar documents found in the vector store.")
+#                 similar_docs.extend(search_results)
+#             except Exception as e:
+#                 logging.error(f"Error during similarity search: {e}")
+#                 logging.exception("Stack trace:")
+#         else:
+#             logging.warning("Skipping similarity search for None vector store.")
+
+#     if not similar_docs:
+#         raise ValueError("No similar documents found.")
+
+#     # Set up the QA chain using the first non-None vector store
+#     qa_chain = setup_qa_chain(next(store for store in vector_stores if store is not None))
+#     response = qa_chain({"query": question})
+#     logging.info(f"Question answered: {response['result']}")
+#     return response['result'],similar_docs
+
 
 def check_documents_processed(document_ids):
     unprocessed_docs = []
