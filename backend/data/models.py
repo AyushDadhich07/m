@@ -8,6 +8,10 @@ class User(models.Model):
     pass
     def __str__(self):
         return self.email
+    
+class GoogleUser(models.Model):
+    google_id = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255)    
 
 class Document(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')

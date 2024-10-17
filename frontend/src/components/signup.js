@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
-import GoogleAuth from './GoogleAuth';
+import GoogleLogin  from './google.js';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -25,8 +25,8 @@ const Signup = () => {
     setLoading(true);
     try {
       console.log(formData);
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/signup/', formData);
-      const response = await axios.post('http://localhost:8001/api/signup/', formData);
+      const response = await axios.post('https://m-zbr0.onrender.com/api/signup/', formData);
+      // const response = await axios.post('http://localhost:8001/api/signup/', formData);
       console.log(response.data);
       setLoading(false);
       navigate('/login');
@@ -114,6 +114,7 @@ const Signup = () => {
       {/* </div> */}
     {/* </GoogleOAuthProvider> */}
         <div className="mt-4 text-center">
+        <GoogleLogin/> 
           <p className="text-sm">
             Already have an account? 
             <a href="/login" className="text-black hover:text-gray-800 font-bold ml-1">

@@ -1,6 +1,6 @@
 // frontend/src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate,useParams } from 'react-router-dom';
 // import Landing from './page/landing';
 import Signup from './page/signup_page';
 import Login from './page/login_page';
@@ -16,13 +16,16 @@ import Glossary from './page/glossary';
 import Pricing from './page/Pricing';
 import Articles from './page/ArticlePage';
 import ArticleDetail from './page/articleDetailPage';
+import LoginSuccess from './page/LoginSuccess';
 // import Dashboard from './page/dashboard';
 // import OtpVerify from './page/otpverify';
 // import RegistrationSuccess from './page/registrationSuccess';
 // import Leaderboard from './components/Leaderboard/Leaderboard.js';
 
 const PrivateRoute = ({ element: Element }) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Simplified authentication check
+  console.log(localStorage.getItem('token'));
+  const isAuthenticated = !!localStorage.getItem('token'); // Check if token exists in localStorage or URL params
+  
   return isAuthenticated ? <Element /> : <Navigate to="/login" />;
 };
 
@@ -33,6 +36,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />  
         <Route path="/login" element={<Login />} />
+        <Route path="/login-success" element={<LoginSuccess />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/home" element={<Home/>} />

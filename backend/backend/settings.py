@@ -4,6 +4,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
+
 
 load_dotenv()  # This loads the variables from .env file
 
@@ -48,6 +50,8 @@ INSTALLED_APPS = [
     'company',
     'allauth',
     'allauth.account',
+    'rest_framework_simplejwt',
+    'social_django',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'dj_rest_auth.registration',
@@ -64,8 +68,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
    
 ]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -80,6 +90,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
             ],
         },
     },
@@ -148,9 +159,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',  # For Google OAuth
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL="login"
+LOGIN_REDIRECT_URL = 'document'
+LOGOUT_URL="logout"
+LOGOUT_REDIRECT_URL="login"
 
 
 # SOCIALACCOUNT_PROVIDERS = {
@@ -166,32 +181,43 @@ LOGIN_REDIRECT_URL = '/'
 
 
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-        'APP': {
-            'client_id': '407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com',
-            'secret': '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',
-            'key': 'AIzaSyBvHQE1E8N8KG9RJg8Z4gZG5RLUMM63MN4',
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         },
+#         'APP': {
+#             'client_id': '407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com',
+#             'secret': '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',
+#             'key': 'AIzaSyBvHQE1E8N8KG9RJg8Z4gZG5RLUMM63MN4',
+#         }
+#     }
+# }
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '552806649066-4c54ijkubdbci729l5lmuc8ej6d0clsq.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+
+GOOGLE_OAUTH2_CLIENT_ID = "552806649066-4c54ijkubdbci729l5lmuc8ej6d0clsq.apps.googleusercontent.com"
+GOOGLE_OAUTH2_CLIENT_SECRET = "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"
+
+LOGIN_REDIRECT_URL = '/auth/google/redirect'
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'

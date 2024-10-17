@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import GoogleAuth from './GoogleAuth';
+import GoogleLogin  from './google.js';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -25,8 +25,8 @@ const LoginPage = () => {
     setLoading(true);
     try {
       console.log(formData);
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/login/', formData);
-      const response = await axios.post('http://localhost:8001/api/login/', formData);
+      const response = await axios.post('https://m-zbr0.onrender.com/api/login/', formData);
+      // const response = await axios.post('http://localhost:8001/api/login/', formData);
       console.log(response.data);
       const { token, userId } = response.data;
       localStorage.setItem('token', token); 
@@ -42,6 +42,26 @@ const LoginPage = () => {
       }
     }
   };
+
+//   const handleGoogleLogin = async () => {
+//     window.open('http://localhost:8000/api/auth/google/','_self')
+//     const response = await fetch('http://localhost:8000/api/auth/google/', {
+//         method: 'GET',
+//         credentials: 'include', // Include cookies if needed for session management
+//     });
+
+//     if (response.ok) {
+//         const data = await response.json();
+//         console.log("Response Data:", data); // Log the received data
+//         // Store the token (or any other data you need)
+//         localStorage.setItem('token', data.token); // Adjust based on how you manage tokens
+//         navigate('/documentpage'); // Redirect to the signup page after successful login
+//     } else {
+//         console.error("Login failed:", response.status, response.statusText);
+//     }
+// };
+
+
 
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
@@ -99,6 +119,7 @@ const LoginPage = () => {
             >
               Login
             </button>
+        <GoogleLogin/> 
             <p className="text-sm">
               Don't have an account? 
               <a href="/signup" className="text-black hover:text-gray-800 font-bold ml-1">
@@ -107,11 +128,7 @@ const LoginPage = () => {
             </p>
           </div>
         </form>
-        {/* <GoogleOAuthProvider clientId="407596730605-tkapgflq4sue875k83d8vqakr33fnoul.apps.googleusercontent.com"> */}
-      {/* <div className="App"> */}
-        {/* <GoogleAuth /> */}
-      {/* </div> */}
-    {/* </GoogleOAuthProvider> */}
+       
       </div>
     </div>
   );

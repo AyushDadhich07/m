@@ -15,7 +15,9 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('documents/<int:document_id>/', views.delete_document, name='delete_document'),
     path('articles/', views.articles_view, name='articles'),
-    path('auth/google/', GoogleLogin.as_view(), name='google_login'),
+    # path('auth/google/', views.google_login, {'backend': 'google'}, name='google-auth'),
+    path('auth/google/redirect/', views.google_redirect, name='google-redirect'),
+    path('auth/', include('social_django.urls', namespace='social')),
     path('predefinedQuestion/', views.question_list, name='question-list'),
     path('articles/<int:article_id>/', views.articles_view, name='article-detail'),
 ]

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Document, ProcessedDocument, Question, Answer, Feedback, Article, defined_Question
+from .models import User, Document, ProcessedDocument, Question, Answer, Feedback, Article, defined_Question,GoogleUser
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name')
@@ -50,7 +50,7 @@ class DefinedQuestionAdmin(admin.ModelAdmin):
     search_fields = ('question',)
     list_filter = ('question',)
 
-
+admin.site.register(GoogleUser)
 admin.site.register(User, UserAdmin)
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(ProcessedDocument, ProcessedDocumentAdmin)

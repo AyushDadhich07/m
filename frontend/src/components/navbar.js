@@ -14,6 +14,7 @@ const Widget = () => {
     const confirmLogout = window.confirm('Are you sure you want to logout?');
     if (confirmLogout) {
       localStorage.removeItem('token');
+      localStorage.removeItem('userEmail');
       setIsLoggedIn(false);
       window.location.href = '/';
     }

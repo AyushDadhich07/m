@@ -1,28 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link,useParams } from 'react-router-dom';
 
 const DocumentsPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [notification, setNotification] = useState('');
+  const { token } = useParams();
   const userEmail = localStorage.getItem('userEmail');
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+      // You can also set userEmail if you want to store it again
+      localStorage.setItem('userEmail', userEmail);
+    }
+  }, [token, userEmail]); // Added for notification
   const navigate = useNavigate();
   
   const fetchDocuments = async () => {
     try {
-      // const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
-      const response = await axios.get(`http://localhost:8001/api/documents/?userEmail=${userEmail}`);
+      // const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // });
+      const response = await axios.get(`http://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
+      // const response = await axios.get(`http://localhost:8001/api/documents/?userEmail=${userEmail}`);
       setDocuments(JSON.parse(response.data));
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
   };
   
-    useEffect(() => {
-      fetchDocuments();
-    }, [userEmail]);
+  useEffect(() => {
+    fetchDocuments();
+  }, [userEmail]);
   
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -33,26 +47,28 @@ const DocumentsPage = () => {
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('user_id', userEmail);
-    console.log("HI");
     setUploading(true);
     try {
-      // const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // });
-      const response = await axios.post('http://localhost:8001/api/documents/', formData, {
+      const response = await axios.post('https://m-zbr0.onrender.com/api/documents/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log("YO");
+      setNotification(' Large documents take time to process.');
+      setTimeout(() => setNotification(''), 5000); // Hide the notification after 5 seconds
+      // const response = await axios.post('http://localhost:8001/api/documents/', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // });
       console.log(response.data);
       fetchDocuments();
+
+      // Show pop-up notification after successful upload
+
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
-      fetchDocuments();
       setUploading(false);
     }
   };
@@ -72,7 +88,7 @@ const DocumentsPage = () => {
 
   const handleDeleteDocument = async (docId) => {
     try {
-      await axios.delete(`https://m-zbr0.onrender.com/api/documents/${docId}/`);
+      await axios.delete(`http://m-zbr0.onrender.com/api/documents/${docId}/`);
       // await axios.delete(`http://localhost:8001/api/documents/${docId}/`);
       fetchDocuments(); // Refresh the document list
     } catch (error) {
@@ -129,6 +145,7 @@ const DocumentsPage = () => {
         <main className="max-w-full mx-auto">
           <h1 className="text-3xl font-bold mb-6">Documents</h1>
           
+          {/* Upload Form */}
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <input 
               type="file" 
@@ -143,6 +160,13 @@ const DocumentsPage = () => {
               {uploading ? 'Uploading...' : 'Upload Document'}
             </button>
           </div>
+
+          {/* Pop-up Notification */}
+          {notification && (
+            <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <span className="block sm:inline">{notification}</span>
+            </div>
+          )}
 
           {documents.length > 0 ? (
             <div className="bg-white rounded-lg shadow-md overflow-hidden">

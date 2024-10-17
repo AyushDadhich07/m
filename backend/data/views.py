@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .models import User, Document, Question, Answer, Feedback,Article,defined_Question
+from .models import User, Document, Question, Answer, Feedback,Article,defined_Question,GoogleUser
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
@@ -16,10 +16,20 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from social_django.utils import load_strategy, load_backend
+from social_core.exceptions import AuthException
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from django.shortcuts import get_object_or_404
-
+from django.conf import settings
+from django.shortcuts import redirect
+from social_django.utils import psa
+import jwt
+from social_core.exceptions import AuthForbidden
+from rest_framework_simplejwt.tokens import RefreshToken
+from social_core.backends.oauth import BaseOAuth2
+import requests
+import secrets
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -46,7 +56,70 @@ def signup(request):
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 # Assuming your signup form template is named signup.html
-# views.py
+# views.py  
+
+def google_redirect(request):
+    # Get the authorization code from the URL parameters
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+    
+    if not code:
+        return JsonResponse({'error': 'Authorization code not found'}, status=400)
+
+    # Exchange the authorization code for access token
+    token_url = 'https://oauth2.googleapis.com/token'
+    token_payload = {
+        'code': code,
+        'client_id': '552806649066-4c54ijkubdbci729l5lmuc8ej6d0clsq.apps.googleusercontent.com',
+        'client_secret': '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',  # Replace with your client secret
+        'redirect_uri': 'https://m-zbr0.onrender.com/api/auth/google/redirect',
+        'grant_type': 'authorization_code'
+    }
+
+    # Get access token
+    token_response = requests.post(token_url, data=token_payload)
+    if token_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to get access token'}, status=400)
+
+    access_token = token_response.json().get('access_token')
+
+    # Get user info from Google
+    userinfo_url = 'https://www.googleapis.com/oauth2/v2/userinfo'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    userinfo_response = requests.get(userinfo_url, headers=headers)
+
+    if userinfo_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to get user info'}, status=400)
+
+    user_data = userinfo_response.json()
+
+    # Extract user information
+    email = user_data.get('email')
+    first_name = user_data.get('given_name', '')
+    last_name = user_data.get('family_name', '')
+
+    try:
+        # Check if user exists
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        # Create new user if doesn't exist
+        import secrets
+        random_password = secrets.token_urlsafe(32)  # Generate a secure random password
+        user = User.objects.create(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=random_password  # In a real application, hash this password
+        )
+
+    # Log the user in
+    request.session['user_id'] = user.id
+    
+    # Redirect to frontend with success status
+    frontend_url = 'https://maxiumsys.com'  # Replace with your frontend URL
+    return redirect(f'{frontend_url}/login-success?token={access_token}&email={email}')
+
+
 
 @csrf_exempt
 def login(request):
