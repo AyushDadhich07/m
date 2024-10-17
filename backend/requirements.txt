@@ -23,5 +23,5 @@ django-storages
 mysqlclient
 docker
 faiss-cpu
-rest_framework_simplejwt
+djangorestframework-simplejwt
 # chromadb
