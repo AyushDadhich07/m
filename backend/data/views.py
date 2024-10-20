@@ -34,6 +34,7 @@ import secrets
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
+logging.basicConfig(level=logging.INFO)
 
 @csrf_exempt
 def signup(request):
