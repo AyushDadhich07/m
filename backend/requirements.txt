@@ -23,6 +23,6 @@ django-storages
 mysqlclient
 docker
 faiss-cpu
-social-aut-app-django
-djangorestframework
+social-auth-app-django
+djangorestframework-simplejwt
 # chromadb
