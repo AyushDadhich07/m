@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Question, Answer,User
+from .models import Question, Answer,User, UserQuestion
 from .models import Feedback
 
 from .models import defined_Question
@@ -39,3 +39,8 @@ class QuestionSerializer(serializers.ModelSerializer):
         question_instance = Question.objects.create(user=user, **validated_data)
         return question_instance    
 
+
+class UserQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserQuestion
+        fields = ['id', 'question', 'answer', 'created_at']

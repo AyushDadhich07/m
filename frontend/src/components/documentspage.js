@@ -26,7 +26,7 @@ const DocumentsPage = () => {
       //     'Content-Type': 'multipart/form-data',
       //   },
       // });
-      const response = await axios.get(`http://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
+      const response = await axios.get(`https://m-zbr0.onrender.com/api/documents/?userEmail=${userEmail}`);
       // const response = await axios.get(`http://localhost:8001/api/documents/?userEmail=${userEmail}`);
       setDocuments(JSON.parse(response.data));
     } catch (error) {

@@ -20,4 +20,5 @@ urlpatterns = [
     path('auth/', include('social_django.urls', namespace='social')),
     path('predefinedQuestion/', views.question_list, name='question-list'),
     path('articles/<int:article_id>/', views.articles_view, name='article-detail'),
+    path('user-questions/', views.user_questions, name='user_questions'),
 ]

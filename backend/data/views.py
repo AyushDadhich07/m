@@ -1,11 +1,11 @@
 from django.http import JsonResponse
-from .models import User, Document, Question, Answer, Feedback,Article,defined_Question,GoogleUser
+from .models import User, Document, Question, Answer, Feedback,Article,defined_Question,GoogleUser,UserQuestion
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import generics
-from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer,PredefinedQuestionSerializer
+from .serializers import QuestionSerializer, AnswerSerializer, FeedbackSerializer,PredefinedQuestionSerializer,UserQuestionSerializer
 from rest_framework.permissions import IsAuthenticated
 from .ai_processing2 import process_uploaded_document, answer_question, check_documents_processed
 import logging
@@ -215,6 +215,7 @@ def answer_question_view(request):
             data = json.loads(request.body)
             question = data.get('question')
             document_ids = data.get('documentIds')
+            user_email=data.get('userEmail')
 
             if not question or not document_ids:
                 return JsonResponse({'error': 'Question and document IDs are required'}, status=400)
@@ -226,8 +227,14 @@ def answer_question_view(request):
                 return JsonResponse({'error': message}, status=400)
             
             print("hi from post")
-
+            user = User.objects.get(email=user_email)
             result,similer_docss = answer_question(question, document_ids)
+            # Save the question and answer
+            UserQuestion.objects.create(
+                user=user,
+                question=question,
+                answer=result['answer']
+            )
             # print(result)
             return JsonResponse({
                 'answer': result,
@@ -345,3 +352,20 @@ def question_list(request):
         questions = defined_Question.objects.all()
         serializer = PredefinedQuestionSerializer(questions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+@csrf_exempt
+def user_questions(request):
+    if request.method == 'GET':
+        user_email = request.GET.get('userEmail')
+        if not user_email:
+            return JsonResponse({'error': 'User email is required'}, status=400)
+
+        try:
+            user = User.objects.get(email=user_email)
+            questions = UserQuestion.objects.filter(user=user).order_by('-created_at')
+            serializer = UserQuestionSerializer(questions, many=True)
+            return JsonResponse(serializer.data, safe=False)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)  

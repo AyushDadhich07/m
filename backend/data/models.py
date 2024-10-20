@@ -75,3 +75,13 @@ class defined_Question(models.Model):
 
     def __str__(self):
         return self.question[:50]   
+    
+
+class UserQuestion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.TextField()
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"{self.user.email}: {self.question[:50]}..."    

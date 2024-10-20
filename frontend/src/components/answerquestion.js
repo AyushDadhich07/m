@@ -15,12 +15,13 @@ const AnswerQuestionsPage = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userQuestions, setUserQuestions] = useState([]);
 
   useEffect(() => {
     const fetchPredefinedQuestions = async () => {
       try {
-        const response = await axios.get('https://m-zbr0.onrender.com/api/predefinedQuestion/');
-        // const response = await axios.get('http://localhost:8001/api/predefinedQuestion/');
+        // const response = await axios.get('https://m-zbr0.onrender.com/api/predefinedQuestion/');
+        const response = await axios.get('http://localhost:8001/api/predefinedQuestion/');
         setPredefinedQuestions(response.data);
       } catch (error) {
         console.error('Error fetching predefined questions:', error);
@@ -28,6 +29,20 @@ const AnswerQuestionsPage = () => {
     };
 
     fetchPredefinedQuestions();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserQuestions = async () => {
+      try {
+        const response = await axios.get(`https://m-zbr0.onrender.com/api/user-questions/?userEmail=${localStorage.getItem('userEmail')}`);
+        // const response = await axios.get(http://localhost:8001/api/user-questions/?userEmail=${localStorage.getItem('userEmail')});
+        setUserQuestions(response.data);
+      } catch (error) {
+        console.error('Error fetching user questions:', error);
+      }
+    };
+
+    fetchUserQuestions();
   }, []);
 
   const handleFileChange = (e) => {
@@ -68,16 +83,22 @@ const AnswerQuestionsPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log(selectedDocuments);
       const response = await axios.post('https://m-zbr0.onrender.com/api/answer-question/', {
         question,
         documentIds: selectedDocuments,
+        userEmail: localStorage.getItem('userEmail'),
       });
       // const response = await axios.post('http://localhost:8001/api/answer-question/', {
       //   question,
       //   documentIds: selectedDocuments,
+      //   userEmail: localStorage.getItem('userEmail'),
       // });
       setAnswer(response.data.answer);
+      // Refresh user questions after submitting a new question
+      
+      const userQuestionsResponse = await axios.get(`https://m-zbr0.onrender.com/api/user-questions/?userEmail=${localStorage.getItem('userEmail')}`);
+      // const userQuestionsResponse = await axios.get(http://localhost:8001/api/user-questions/?userEmail=${localStorage.getItem('userEmail')});
+      setUserQuestions(userQuestionsResponse.data);
     } catch (error) {
       console.error('Error getting answer:', error);
       setAnswer(error.response?.data?.error || 'An error occurred while processing your question.');
@@ -162,6 +183,24 @@ const AnswerQuestionsPage = () => {
             ))}
           </ul>
         </nav>
+        <div className="mt-6">
+          <h2 className="text-xl font-bold mb-4 text-white">Your Questions</h2>
+          <ul className="space-y-2">
+            {userQuestions.map((q) => (
+              <li key={q.id}>
+                <button 
+                  onClick={() => {
+                    setQuestion(q.question);
+                    setAnswer(q.answer);
+                  }}
+                  className="flex items-center space-x-2 text-white hover:bg-[#565869] rounded p-2 w-full text-left"
+                >
+                  {q.question}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {/* Main content */}
