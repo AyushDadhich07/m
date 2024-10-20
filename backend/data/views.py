@@ -230,11 +230,13 @@ def answer_question_view(request):
             user = User.objects.get(email=user_email)
             result,similer_docss = answer_question(question, document_ids)
             # Save the question and answer
+            logging("hehehe");
             UserQuestion.objects.create(
                 user=user,
                 question=question,
-                answer=result['answer']
+                answer=result
             )
+            logging("hehehe2");
             # print(result)
             return JsonResponse({
                 'answer': result,
